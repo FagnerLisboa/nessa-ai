@@ -1,0 +1,22 @@
+/* ============================================================
+   NESSA AI — Variáveis e mixins SCSS (sem saída de CSS)
+   Breakpoints espelhados em src/core/utils/tokens.ts
+   ============================================================ */
+
+$nessa-bp-sm: 640px;
+$nessa-bp-md: 768px;
+$nessa-bp-lg: 1024px;
+$nessa-bp-xl: 1280px;
+$nessa-bp-2xl: 1536px;
+
+@mixin nessa-up($bp) {
+  @media (min-width: $bp) { @content; }
+}
+
+@mixin nessa-down($bp) {
+  @media (max-width: ($bp - 0.02px)) { @content; }
+}
+
+@mixin nessa-between($min, $max) {
+  @media (min-width: $min) and (max-width: ($max - 0.02px)) { @content; }
+}
