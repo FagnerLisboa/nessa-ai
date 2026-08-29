@@ -86,6 +86,16 @@ import { SuggestionsComponent } from "../shell/suggestions/suggestions.component
 
     .stage__suggestions {
       margin-top: 18px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* Mobile fino: padding lateral menor para o composer e as
+       sugestões usarem toda a largura disponível (375–414px). */
+    @media (max-width: 479.98px) {
+      .stage {
+        padding: 32px 16px 44px;
+      }
     }
 
     /* Entrada escalonada (uma única vez). */

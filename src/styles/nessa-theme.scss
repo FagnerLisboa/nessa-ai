@@ -167,6 +167,22 @@ $nessa-bp-2xl: 1536px;
 /* ============================================================
    Base
    ============================================================ */
+
+/*
+ * Causa-raiz do overflow mobile corrigida aqui: com border-box,
+ * width: 100% + padding nunca ultrapassa o container/viewport.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100vw;
+}
+
 body {
   background-color: var(--nessa-background);
   color: var(--nessa-text);
@@ -176,6 +192,9 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background-color var(--t-base) var(--ease-out), color var(--t-base) var(--ease-out);
+  /* "clip" (não "hidden"): corta vazamentos sem criar container de
+     scroll — position: sticky e o scroll vertical seguem intactos. */
+  overflow-x: clip;
 }
 
 ::selection {

@@ -106,6 +106,35 @@ const SUGGESTIONS: Suggestion[] = [
       color: var(--nessa-accent);
     }
 
+    /* Mobile: duas colunas exatas — cada botão cabe por inteiro,
+       o texto quebra se preciso e nada sai da viewport. */
+    @media (max-width: 639.98px) {
+      :host {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .chips {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        width: 100%;
+      }
+
+      .chip {
+        min-width: 0;
+        justify-content: center;
+        padding: 9px 10px;
+        white-space: normal;
+        line-height: 1.3;
+        text-align: center;
+      }
+
+      .chip__icon {
+        flex: none;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .chip {
         transition: none;
