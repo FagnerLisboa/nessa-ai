@@ -1,0 +1,88 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.toolbar__search {
+  width: 100%;
+  max-width: 340px;
+}
+
+.toolbar__count {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--nessa-text-muted);
+  white-space: nowrap;
+}
+
+.conv__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--nessa-hairline);
+  background: var(--nessa-surface-2);
+  color: var(--nessa-accent);
+  transition: transform var(--t-fast) var(--ease-spring), background var(--t-fast) var(--ease-out);
+}
+
+.conv:hover .conv__icon {
+  transform: scale(1.06);
+  background: var(--nessa-primary-soft);
+}
+
+.conv__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.conv__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nessa-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv__meta {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--nessa-text-muted);
+}
+
+.conv__sep {
+  margin: 0 2px;
+  opacity: 0.6;
+}
+
+.conv__menu {
+  flex: none;
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.conv:hover .conv__menu,
+.conv__menu:focus-within {
+  opacity: 1;
+}
+
+/* Em telas de toque o menu fica sempre visível. */
+@media (hover: none) {
+  .conv__menu {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .toolbar__count {
+    display: none;
+  }
+}
