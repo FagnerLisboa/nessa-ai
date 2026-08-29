@@ -1,24 +1,47 @@
 <!doctype html>
-<html lang="pt-BR" data-density="comfortable" data-reduce-motion="false">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NESSA AI — Plataforma moderna de Inteligência Artificial. Complexidade interna. Simplicidade externa." />
-    <meta name="theme-color" content="#0B0B10" />
+    <meta name="description" content="NESSA AI — plataforma de Inteligência Artificial." />
+    <title>NESSA AI</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>NESSA AI — Plataforma de Inteligência Artificial</title>
     <style>
-      html, body { margin: 0; padding: 0; background-color: #0B0B10; }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        background: #0b0b10;
+        color: #f5f5f7;
+      }
+      html[data-theme="light"] body {
+        background: #f6f6f9;
+        color: #191922;
+      }
     </style>
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem("nessa:settings:v1");
+          if (raw) {
+            var theme = JSON.parse(raw).theme;
+            if (theme === "light" || theme === "dark") {
+              document.documentElement.dataset.theme = theme;
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
