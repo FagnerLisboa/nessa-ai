@@ -1,8 +1,8 @@
 <div class="shell">
-  <app-sidebar [open]="sidebarOpen()" (requestClose)="closeSidebar()" />
+  <app-sidebar [open]="sidebarOpen()" (requestClose)="closeSidebar()"></app-sidebar>
 
   <div class="shell__body">
-    <app-header (requestToggle)="toggleSidebar()" />
+    <app-header (requestToggle)="toggleSidebar()"></app-header>
 
     <main class="shell__main">
       <div class="stage-ambient" aria-hidden="true">
@@ -12,7 +12,7 @@
       </div>
 
       <section class="stage">
-        <app-nessa-logo [size]="72" />
+        <app-nessa-logo [size]="72"></app-nessa-logo>
 
         <h2 class="stage__name">NESSA</h2>
 
