@@ -11,23 +11,7 @@
         <span class="stage-ambient__grid"></span>
       </div>
 
-      <section class="stage">
-        <app-nessa-logo class="stage__logo" [size]="56"></app-nessa-logo>
-
-        <p class="stage__wordmark">NESSA</p>
-
-        <h2 class="stage__title">Como posso ajudar você hoje?</h2>
-
-        <p class="stage__subtitle">
-          Converse, crie, pesquise e transforme suas ideias.
-        </p>
-
-        <div class="stage__composer">
-          <app-nessa-composer [seed]="seed()" [seedTick]="seedTick()"></app-nessa-composer>
-        </div>
-
-        <app-suggestions class="stage__suggestions" (picked)="onSuggestion($event)"></app-suggestions>
-      </section>
+      <router-outlet></router-outlet>
     </main>
   </div>
 

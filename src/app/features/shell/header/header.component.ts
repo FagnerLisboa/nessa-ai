@@ -1,8 +1,24 @@
-import { Component, effect, output, signal } from "@angular/core";
+import { Component, inject, output, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { NavigationEnd, Router } from "@angular/router";
+import { filter } from "rxjs/operators";
 
-type Theme = "dark" | "light";
+import { ThemeService } from "../../../../core/services";
 
-const THEME_KEY = "nessa:theme";
+const PAGE_TITLES: Record<string, string> = {
+  "/": "Início",
+  "/conversations": "Conversas",
+  "/agents": "Agentes",
+  "/projects": "Projetos",
+  "/files": "Arquivos",
+  "/images": "Imagens",
+  "/videos": "Vídeos",
+  "/voice": "Voz",
+  "/research": "Pesquisa",
+  "/assistant": "Assistente",
+  "/settings": "Configurações",
+  "/profile": "Perfil",
+};
 
 @Component({
   selector: "app-header",
@@ -14,34 +30,28 @@ export class HeaderComponent {
   /** Emitido para abrir/fechar o drawer (tablet/mobile). */
   readonly requestToggle = output<void>();
 
-  /** Título da página atual. */
-  protected readonly pageTitle = signal("Início");
+  private readonly themeService = inject(ThemeService);
+  private readonly router = inject(Router);
 
-  /** Tema ativo. */
-  protected readonly theme = signal<Theme>(this.readInitialTheme());
+  /** Título da página atual, derivado da rota. */
+  protected pageTitle = signal(PAGE_TITLES[this.router.url] ?? "Início");
+
+  protected get isDark(): boolean {
+    return this.themeService.theme() === "dark";
+  }
 
   constructor() {
-    effect(() => {
-      const value = this.theme();
-      document.documentElement.setAttribute("data-theme", value);
-      try {
-        localStorage.setItem(THEME_KEY, value);
-      } catch {
-        /* armazenamento indisponível — o tema segue em memória */
-      }
-    });
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => {
+        this.pageTitle.set(PAGE_TITLES[event.urlAfterRedirects] ?? "NESSA");
+      });
   }
 
   protected toggleTheme(): void {
-    this.theme.set(this.theme() === "dark" ? "light" : "dark");
-  }
-
-  protected get isDark(): boolean {
-    return this.theme() === "dark";
-  }
-
-  private readInitialTheme(): Theme {
-    const fromDom = document.documentElement.getAttribute("data-theme");
-    return fromDom === "light" ? "light" : "dark";
+    this.themeService.toggle();
   }
 }

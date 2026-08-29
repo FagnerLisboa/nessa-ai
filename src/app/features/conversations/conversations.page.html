@@ -1,0 +1,69 @@
+<section class="page">
+  <app-page-header title="Conversas" description="Seu histórico de conversas com a NESSA.">
+    <a actions class="btn btn--primary" routerLink="/">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+      Nova conversa
+    </a>
+  </app-page-header>
+
+  <div class="toolbar arrive" style="animation-delay: 60ms">
+    <app-search-box class="toolbar__search" placeholder="Pesquisar conversas" [value]="query()" (valueChange)="query.set($event)" />
+    @if (status() === "ready") {
+      <span class="toolbar__count">{{ filtered().length }} {{ filtered().length === 1 ? "conversa" : "conversas" }}</span>
+    }
+  </div>
+
+  @switch (status()) {
+    @case ("loading") {
+      <app-state-view kind="loading"></app-state-view>
+    }
+    @case ("error") {
+      <app-state-view kind="error" (retry)="retry()"></app-state-view>
+    }
+    @case ("ready") {
+      @if (filtered().length === 0) {
+        @if (query().trim().length > 0) {
+          <app-state-view
+            kind="empty"
+            title="Nada encontrado"
+            description="Nenhuma conversa corresponde à sua pesquisa."
+            actionLabel="Limpar pesquisa"
+            (action)="query.set('')"
+          />
+        } @else {
+          <app-state-view
+            kind="empty"
+            title="Nenhuma conversa ainda"
+            description="Comece um diálogo com a NESSA e ele aparecerá aqui."
+            actionLabel="Nova conversa"
+          />
+        }
+      } @else {
+        <div class="panel arrive" style="animation-delay: 120ms">
+          @for (item of filtered(); track item.id; let i = $index) {
+            <div class="conv row-line" [class.is-first]="i === 0">
+              <span class="conv__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 4.2c-4.6 0-8 2.9-8 6.6 0 1.7.7 3.2 1.9 4.4-.1 1.2-.5 2.4-1.3 3.3 1.6-.1 3-.6 4.1-1.4.9.3 2 .4 3.3.4 4.6 0 8-2.9 8-6.6S16.6 4.2 12 4.2Z" />
+                </svg>
+              </span>
+
+              <div class="conv__body">
+                <p class="conv__title">{{ item.title }}</p>
+                <p class="conv__meta">
+                  {{ item.displayDate }}
+                  <span class="conv__sep" aria-hidden="true">·</span>
+                  {{ item.messageCount }} {{ item.messageCount === 1 ? "mensagem" : "mensagens" }}
+                </p>
+              </div>
+
+              <app-action-menu class="conv__menu" [actions]="menuActions" (action)="onAction(item.id, $event)"></app-action-menu>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</section>
