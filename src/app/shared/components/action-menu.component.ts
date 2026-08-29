@@ -109,6 +109,13 @@ export interface MenuAction {
     .menu__item.is-danger {
       color: var(--nessa-danger);
     }
+
+    /* Mobile: o painel nunca toca as bordas da viewport. */
+    @media (max-width: 479.98px) {
+      .menu__panel {
+        max-width: calc(100vw - 32px);
+      }
+    }
   `,
 })
 export class ActionMenuComponent {

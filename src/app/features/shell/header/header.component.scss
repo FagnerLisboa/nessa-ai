@@ -46,6 +46,7 @@
 /* ---------- Título ---------- */
 .head__title {
   margin: 0;
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -55,6 +56,31 @@
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--nessa-text);
+}
+
+/* Mobile exibe a marca; ≥640px exibe o nome da página. */
+.head__title-brand {
+  display: none;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+}
+
+@media (max-width: 639.98px) {
+  .head__title-page {
+    display: none;
+  }
+
+  .head__title-brand {
+    display: inline;
+  }
+
+  :host {
+    gap: 8px;
+  }
+
+  .head__actions {
+    gap: 4px;
+  }
 }
 
 /* ---------- Ações ---------- */

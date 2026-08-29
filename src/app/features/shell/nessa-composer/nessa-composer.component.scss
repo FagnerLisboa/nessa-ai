@@ -10,6 +10,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border-radius: var(--radius-composer);
   background: var(--nessa-surface);
   border: 1px solid var(--nessa-border);
@@ -309,6 +312,41 @@
 .composer__status.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* ============================================================
+   Mobile fino (375–414px) — tudo cabe, nada é cortado.
+   ============================================================ */
+@media (max-width: 479.98px) {
+  .composer__field {
+    padding: 14px 14px 4px;
+    font-size: 16px; /* evita zoom automático do iOS no focus */
+  }
+
+  .composer__files {
+    padding: 12px 12px 0;
+  }
+
+  .file-chip {
+    max-width: 100%;
+  }
+
+  .composer__bar {
+    padding: 4px 8px 6px;
+  }
+
+  .composer__status {
+    padding: 0 14px 10px;
+  }
+
+  /* O menu do "+" ocupa a largura interna do composer —
+     nunca ultrapassa as bordas nem encosta na viewport. */
+  .composer__menu {
+    left: 10px;
+    right: 10px;
+    min-width: 0;
+    width: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
