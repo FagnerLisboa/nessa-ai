@@ -14,7 +14,7 @@ import {
   useSettings,
 } from "../../core/state/workspace.store";
 import { cn } from "../../core/utils";
-import { STAGE_LABEL, STORAGE_KEYS } from "../../core/utils/tokens";
+import { STORAGE_KEYS } from "../../core/utils/tokens";
 import { useReveal } from "../../shared/directives/hooks";
 import { Icon } from "../../shared/components/Icons";
 import { initials, formatFullTime } from "../../shared/pipes/format";
@@ -156,6 +156,20 @@ export default function SettingsPage() {
             </div>
 
             <Field
+              label="Tema"
+              hint="O modo escuro é a identidade da NESSA — o modo claro usa os mesmos tokens."
+            >
+              <Segmented
+                value={form.theme}
+                onChange={(value) => set("theme", value)}
+                options={[
+                  { value: "dark", label: "Escuro" },
+                  { value: "light", label: "Claro" },
+                ]}
+              />
+            </Field>
+
+            <Field
               label="Idioma da interface"
               htmlFor="nessa-language"
               hint="Aplica-se à formatação de datas, horas e números."
@@ -254,23 +268,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-[var(--radius-lg)] border border-[var(--nessa-hairline)] bg-[var(--nessa-surface)] p-[var(--card-pad)] shadow-[var(--shadow-xs)]">
-            <p className="u-label mb-4">Tema</p>
-            <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-[var(--radius-sm)] border border-[var(--nessa-hairline)] bg-[var(--nessa-surface-2)] text-[var(--nessa-accent)]">
-                <Icon name="lock" size={16} />
-              </span>
-              <div>
-                <p className="text-[13px] font-bold text-[var(--nessa-text)]">Escuro — identidade da marca</p>
-                <p className="text-[11.5px] text-[var(--nessa-text-muted)]">Novos temas chegam com o sistema de conta.</p>
-              </div>
-            </div>
-            <div className="mt-4 border-t border-[var(--nessa-hairline)] pt-3">
-              <Badge tone="primary" dot>
-                {STAGE_LABEL}
-              </Badge>
-            </div>
-          </div>
         </div>
       </div>
     </div>

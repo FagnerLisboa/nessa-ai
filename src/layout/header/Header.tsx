@@ -1,21 +1,26 @@
 /* ============================================================
-   NESSA AI — Header global (layout/header)
-   Breadcrumb do módulo ativo, relógio local e status da etapa.
+   NESSA AI — Header (layout/header)
+   Minimalista: título da página · tema · perfil.
+   Mobile: menu · título · perfil.
    ============================================================ */
 import { Link, useLocation } from "react-router-dom";
 import { getModuleByPath } from "../../core/models/modules";
-import { setMobileNav } from "../../core/state/workspace.store";
-import { cn } from "../../core/utils";
-import { STAGE_LABEL } from "../../core/utils/tokens";
-import { useMediaQuery, useNow } from "../../shared/directives/hooks";
+import {
+  setMobileNav,
+  toggleTheme,
+  useOperatorName,
+  useTheme,
+} from "../../core/state/workspace.store";
+import { useMediaQuery } from "../../shared/directives/hooks";
 import { Icon } from "../../shared/components/Icons";
-import { formatClock } from "../../shared/pipes/format";
-import { Badge, Kbd } from "../../shared/ui";
+import { initials } from "../../shared/pipes/format";
 
 export function Header() {
   const location = useLocation();
-  const now = useNow(30_000);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1200px)");
+  const showTheme = useMediaQuery("(min-width: 768px)");
+  const theme = useTheme();
+  const name = useOperatorName();
   const current = getModuleByPath(location.pathname);
 
   return (
@@ -23,49 +28,36 @@ export function Header() {
       {!isDesktop && (
         <button
           onClick={() => setMobileNav(true)}
-          className="grid h-9 w-9 place-items-center rounded-[var(--radius-sm)] text-[var(--nessa-text-muted)] transition-colors hover:bg-[var(--nessa-surface-hover)] hover:text-[var(--nessa-text)]"
+          className="header-icon-btn -ml-2"
           aria-label="Abrir navegação"
         >
           <Icon name="menu" size={19} />
         </button>
       )}
 
-      <div className="flex min-w-0 items-baseline gap-2.5">
-        <span className="u-label hidden sm:inline">{current?.group ?? "nessa"}</span>
-        <span className="hidden h-3 w-px bg-[var(--nessa-border)] sm:inline-block" aria-hidden="true" />
-        <span className="font-display truncate text-[14px] font-bold tracking-tight text-[var(--nessa-text)]">
-          {current?.label ?? "Início"}
-        </span>
-      </div>
+      <h1 className="font-display min-w-0 truncate text-[14.5px] font-bold tracking-tight text-[var(--nessa-text)]">
+        {current?.label ?? "Início"}
+      </h1>
 
-      <div className="ml-auto flex items-center gap-3">
-        <span className="hidden items-center gap-1.5 text-[12px] font-medium tabular-nums text-[var(--nessa-text-muted)] md:inline-flex">
-          <Icon name="clock" size={13} />
-          {formatClock(now)}
-        </span>
-
-        <Badge tone="primary" dot pulse className={cn(!isDesktop && "hidden sm:inline-flex")}>
-          {STAGE_LABEL}
-        </Badge>
-
-        {isDesktop && (
-          <span className="hidden items-center gap-1.5 text-[11px] text-[var(--nessa-text-muted)] xl:inline-flex">
-            <Kbd>[</Kbd> sidebar
-          </span>
+      <div className="ml-auto flex items-center gap-1.5">
+        {showTheme && (
+          <button
+            onClick={toggleTheme}
+            className="header-icon-btn"
+            aria-label={theme === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
+            title={theme === "dark" ? "Tema claro" : "Tema escuro"}
+          >
+            <Icon name={theme === "dark" ? "sun" : "moon"} size={17} />
+          </button>
         )}
 
         <Link
           to="/settings"
-          className={cn(
-            "grid h-9 w-9 place-items-center rounded-[var(--radius-sm)] transition-all duration-[var(--t-fast)]",
-            location.pathname === "/settings"
-              ? "bg-[var(--nessa-primary-soft)] text-[var(--nessa-accent)]"
-              : "text-[var(--nessa-text-muted)] hover:bg-[var(--nessa-surface-hover)] hover:text-[var(--nessa-text)]",
-          )}
-          aria-label="Configurações"
-          title="Configurações"
+          className="ml-1 grid h-[30px] w-[30px] flex-none place-items-center rounded-full border border-[var(--nessa-primary-ring)] bg-[var(--nessa-primary-soft)] text-[11px] font-bold text-[var(--nessa-accent)] transition-transform duration-[var(--t-fast)] ease-[var(--ease-spring)] hover:scale-105 active:scale-95"
+          aria-label={`Perfil de ${name} — abrir configurações`}
+          title={name}
         >
-          <Icon name="gear" size={17} />
+          {initials(name)}
         </Link>
       </div>
     </header>

@@ -2,7 +2,7 @@
    NESSA AI — Store do workspace (estado global via signals)
    Persistência real em localStorage + efeitos no <html>.
    ============================================================ */
-import type { SettingsState, Toast, ToastTone, UiState } from "../models";
+import type { SettingsState, Toast, ToastTone, UiState, UiTheme } from "../models";
 import { STORAGE_KEYS } from "../utils/tokens";
 import { computed, createSignal, useSignal } from "./signal";
 
@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS: SettingsState = {
   language: "pt-BR",
   density: "comfortable",
   reduceMotion: false,
+  theme: "dark",
 };
 
 function loadSettings(): SettingsState {
@@ -46,9 +47,10 @@ function applySettingsEffects(settings: SettingsState) {
   const root = document.documentElement;
   root.dataset.density = settings.density;
   root.dataset.reduceMotion = String(settings.reduceMotion);
+  root.dataset.theme = settings.theme;
 }
 
-settingsSignal.subscribe(() => applySettingsEffects(settingsSignal.get()));
+settingsSignal.subscribe((settings) => applySettingsEffects(settings));
 applySettingsEffects(settingsSignal.get());
 
 /* ---------- UI efêmera ---------- */
@@ -78,6 +80,10 @@ export function useOperatorName(): string {
   return useSignal(operatorName);
 }
 
+export function useTheme(): UiTheme {
+  return useSignal(settingsSignal).theme;
+}
+
 /* ---------- Ações ---------- */
 
 export function updateSettings(patch: Partial<SettingsState>) {
@@ -86,6 +92,10 @@ export function updateSettings(patch: Partial<SettingsState>) {
 
 export function resetSettings() {
   settingsSignal.set(DEFAULT_SETTINGS);
+}
+
+export function toggleTheme() {
+  settingsSignal.set((prev) => ({ ...prev, theme: prev.theme === "dark" ? "light" : "dark" }));
 }
 
 export function toggleSidebar() {

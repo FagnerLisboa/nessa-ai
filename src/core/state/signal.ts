@@ -6,22 +6,24 @@ import { useSyncExternalStore } from "react";
 
 export type Updater<T> = T | ((prev: T) => T);
 
+export type Listener<T> = (value: T) => void;
+
 export interface Signal<T> {
   get(): T;
   set(next: Updater<T>): void;
-  subscribe(listener: () => void): () => void;
+  subscribe(listener: Listener<T>): () => void;
 }
 
 export interface ReadonlySignal<T> {
   get(): T;
-  subscribe(listener: () => void): () => void;
+  subscribe(listener: Listener<T>): () => void;
 }
 
 export function createSignal<T>(initial: T): Signal<T> {
   let value = initial;
-  const listeners = new Set<() => void>();
+  const listeners = new Set<Listener<T>>();
 
-  const subscribe = (listener: () => void) => {
+  const subscribe = (listener: Listener<T>) => {
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
@@ -34,7 +36,7 @@ export function createSignal<T>(initial: T): Signal<T> {
       const resolved = typeof next === "function" ? (next as (prev: T) => T)(value) : next;
       if (Object.is(resolved, value)) return;
       value = resolved;
-      listeners.forEach((listener) => listener());
+      listeners.forEach((listener) => listener(value));
     },
     subscribe,
   };

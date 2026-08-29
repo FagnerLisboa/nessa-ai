@@ -1,7 +1,8 @@
 /* ============================================================
-   NESSA AI — Design System (Etapa 1 · Fundação)
+   NESSA AI — Design System
    "Complexidade interna. Simplicidade externa."
    Todos os tokens vivem aqui. Componentes NÃO declaram cores.
+   Dark mode é o principal; light mode deriva dos mesmos tokens.
    ============================================================ */
 
 :root {
@@ -27,7 +28,7 @@
   --nessa-warning: #F59E0B;
   --nessa-danger: #EF4444;
 
-  /* ---- Derivados (alfa controlado, ainda tokenizado) ---- */
+  /* ---- Derivados (alfa controlado, tokenizado) ---- */
   --nessa-primary-soft: rgba(139, 92, 246, 0.14);
   --nessa-primary-ring: rgba(139, 92, 246, 0.38);
   --nessa-success-soft: rgba(34, 197, 94, 0.14);
@@ -46,6 +47,7 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+  --radius-composer: 18px;
   --radius-full: 999px;
 
   /* ---- Sombras ---- */
@@ -55,6 +57,7 @@
   --shadow-lg: 0 18px 56px rgba(0, 0, 0, 0.55);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.045);
   --shadow-glow: 0 0 0 1px rgba(139, 92, 246, 0.28), 0 10px 36px rgba(139, 92, 246, 0.16);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--nessa-hairline);
 
   /* ---- Transições ---- */
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -79,9 +82,10 @@
 
   /* ---- Layout ---- */
   --header-h: 57px;
-  --sidebar-w: 250px;
-  --sidebar-w-collapsed: 74px;
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 72px;
   --content-max: 1140px;
+  --composer-max: 720px;
   --shell-pad: clamp(18px, 3.4vw, 40px);
   --card-pad: clamp(18px, 2.4vw, 26px);
 
@@ -90,11 +94,55 @@
   --z-content: 1;
   --z-sidebar: 30;
   --z-header: 40;
+  --z-pop: 50;
   --z-drawer: 60;
   --z-toast: 80;
+
+  color-scheme: dark;
 }
 
-/* Densidade de interface (preferência real do usuário) */
+/* ============================================================
+   Light mode — mesmas variáveis, valores claros.
+   ============================================================ */
+html[data-theme="light"] {
+  --nessa-background: #F6F6F9;
+  --nessa-surface: #FFFFFF;
+  --nessa-surface-2: #F1F1F6;
+  --nessa-surface-hover: #EAEAF1;
+  --nessa-border: #E1E1EA;
+
+  --nessa-text: #191922;
+  --nessa-text-muted: #62626E;
+
+  --nessa-primary: #8B5CF6;
+  --nessa-primary-hover: #7C3AED;
+  --nessa-secondary: #6366F1;
+  --nessa-accent: #7C3AED;
+
+  --nessa-success: #16A34A;
+  --nessa-warning: #D97706;
+  --nessa-danger: #DC2626;
+
+  --nessa-primary-soft: rgba(139, 92, 246, 0.1);
+  --nessa-primary-ring: rgba(139, 92, 246, 0.28);
+  --nessa-success-soft: rgba(22, 163, 74, 0.12);
+  --nessa-warning-soft: rgba(217, 119, 6, 0.12);
+  --nessa-danger-soft: rgba(220, 38, 38, 0.1);
+  --nessa-hairline: rgba(25, 25, 34, 0.1);
+  --nessa-scrim: rgba(25, 25, 34, 0.42);
+
+  --shadow-xs: 0 1px 2px rgba(25, 25, 34, 0.06);
+  --shadow-sm: 0 2px 10px rgba(25, 25, 34, 0.07);
+  --shadow-md: 0 10px 28px rgba(25, 25, 34, 0.1);
+  --shadow-lg: 0 18px 56px rgba(25, 25, 34, 0.14);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  --shadow-glow: 0 0 0 1px rgba(139, 92, 246, 0.2), 0 8px 28px rgba(139, 92, 246, 0.12);
+  --shadow-pop: 0 12px 40px rgba(25, 25, 34, 0.16), 0 0 0 1px var(--nessa-hairline);
+
+  color-scheme: light;
+}
+
+/* Densidade de interface */
 html[data-density="compact"] {
   --shell-pad: clamp(12px, 2.2vw, 24px);
   --card-pad: clamp(12px, 1.8vw, 18px);
@@ -102,12 +150,14 @@ html[data-density="compact"] {
 }
 
 /* ============================================================
-   Breakpoints (referência SCSS — espelhados em core/utils/tokens)
-   sm: 640px · md: 768px · lg: 1024px · xl: 1280px · 2xl: 1536px
+   Breakpoints (espelhados em core/utils/tokens)
+   sm: 640 · md: 768 · lg: 1024 · shell: 1200 · xl: 1280 · 2xl: 1536
+   Tablet 768–1199: sidebar recolhível · Desktop >=1200: sidebar fixa
    ============================================================ */
 $nessa-bp-sm: 640px;
 $nessa-bp-md: 768px;
 $nessa-bp-lg: 1024px;
+$nessa-bp-shell: 1200px;
 $nessa-bp-xl: 1280px;
 $nessa-bp-2xl: 1536px;
 
@@ -117,10 +167,6 @@ $nessa-bp-2xl: 1536px;
 /* ============================================================
    Base
    ============================================================ */
-html {
-  color-scheme: dark;
-}
-
 body {
   background-color: var(--nessa-background);
   color: var(--nessa-text);
@@ -129,7 +175,7 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv02", "cv03", "cv11";
+  transition: background-color var(--t-base) var(--ease-out), color var(--t-base) var(--ease-out);
 }
 
 ::selection {
@@ -167,11 +213,6 @@ body {
   color: var(--nessa-text-muted);
 }
 
-.hairline { border-color: var(--nessa-hairline); }
-
-.surface { background: var(--nessa-surface); }
-.surface-2 { background: var(--nessa-surface-2); }
-
 /* ============================================================
    Movimento
    ============================================================ */
@@ -183,33 +224,37 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes nessa-arrive {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 @keyframes nessa-toast-in {
   from { opacity: 0; transform: translateY(14px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+@keyframes nessa-pop-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 @keyframes nessa-drift {
   from { transform: translate3d(-2%, -1%, 0) scale(1); }
-  to { transform: translate3d(3%, 2%, 0) scale(1.06); }
+  to { transform: translate3d(3%, 2%, 0) scale(1.05); }
 }
 @keyframes nessa-drift-alt {
-  from { transform: translate3d(2%, 1%, 0) scale(1.04); }
+  from { transform: translate3d(2%, 1%, 0) scale(1.03); }
   to { transform: translate3d(-3%, -2%, 0) scale(1); }
 }
 @keyframes nessa-pulse-soft {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.55; transform: scale(0.94); }
 }
-@keyframes nessa-wing {
-  0%, 100% { transform: scaleX(1); }
-  50% { transform: scaleX(0.92); }
-}
-@keyframes nessa-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
 
-.route-anim { animation: nessa-rise 0.38s var(--ease-out) both; }
+.route-anim { animation: nessa-arrive 0.38s var(--ease-out) both; }
 .toast-anim { animation: nessa-toast-in 0.32s var(--ease-spring) both; }
+.pop-anim { animation: nessa-pop-in 0.16s var(--ease-out) both; }
+
+/* Entrada única e calma (borboleta, Home) — não contínua. */
+.arrive { animation: nessa-arrive 0.7s var(--ease-out) both; }
 
 /* Scroll reveal */
 .reveal {
@@ -223,7 +268,7 @@ body {
 }
 
 /* ============================================================
-   Fundo ambiente (camadas sutis, tokenizadas)
+   Fundo ambiente — camadas sutis, tokenizadas.
    ============================================================ */
 .ambient {
   position: fixed;
@@ -236,35 +281,44 @@ body {
   position: absolute;
   width: 62vw;
   height: 62vw;
-  max-width: 900px;
-  max-height: 900px;
+  max-width: 880px;
+  max-height: 880px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.11), transparent 68%);
-  top: -22%;
+  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.1), transparent 68%);
+  top: -24%;
   left: -14%;
-  animation: nessa-drift 30s var(--ease-out) infinite alternate;
+  animation: nessa-drift 34s var(--ease-out) infinite alternate;
 }
 .ambient__glow--alt {
-  background: radial-gradient(closest-side, rgba(99, 102, 241, 0.09), transparent 68%);
+  background: radial-gradient(closest-side, rgba(99, 102, 241, 0.08), transparent 68%);
   top: auto;
   left: auto;
-  bottom: -28%;
+  bottom: -30%;
   right: -16%;
-  animation: nessa-drift-alt 38s var(--ease-out) infinite alternate;
+  animation: nessa-drift-alt 42s var(--ease-out) infinite alternate;
 }
 .ambient__grid {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(245, 245, 247, 0.045) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(245, 245, 247, 0.04) 1px, transparent 1px);
   background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 90% 62% at 28% 0%, black 20%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 62% at 28% 0%, black 20%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 18%, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 18%, transparent 76%);
 }
 .ambient__noise {
   position: absolute;
   inset: 0;
-  opacity: 0.028;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+html[data-theme="light"] {
+  .ambient__glow { opacity: 0.5; }
+  .ambient__grid {
+    background-image: radial-gradient(rgba(25, 25, 34, 0.05) 1px, transparent 1px);
+    opacity: 0.6;
+  }
+  .ambient__noise { opacity: 0.015; }
 }
 
 /* ============================================================

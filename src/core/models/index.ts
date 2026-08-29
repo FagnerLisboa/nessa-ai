@@ -44,6 +44,7 @@ export interface FeatureModule {
 
 export type UiLanguage = "pt-BR" | "en";
 export type UiDensity = "comfortable" | "compact";
+export type UiTheme = "dark" | "light";
 
 export interface SettingsState {
   displayName: string;
@@ -51,6 +52,7 @@ export interface SettingsState {
   language: UiLanguage;
   density: UiDensity;
   reduceMotion: boolean;
+  theme: UiTheme;
 }
 
 export type ToastTone = "success" | "info" | "danger";

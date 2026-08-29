@@ -31,20 +31,18 @@ function GuardedShell() {
 
 function NotFoundPage() {
   return (
-    <div className="mx-auto max-w-xl pt-8">
-      <EmptyState
-        icon="compass"
-        title="Rota não registrada"
-        description="Este caminho não faz parte do mapa de módulos da NESSA. Verifique o endereço ou volte para o início."
+    <EmptyState
+      title="Página não encontrada"
+      description="Este caminho não faz parte da NESSA. Verifique o endereço ou volte para o início."
+    >
+      <Link
+        to="/"
+        className="inline-flex h-9 items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--nessa-primary)] px-4 text-[13px] font-semibold text-[var(--nessa-text)] transition-all duration-[var(--t-fast)] ease-[var(--ease-out)] hover:bg-[var(--nessa-primary-hover)] active:scale-[0.97]"
+        aria-label="Voltar para o início"
       >
-        <Link
-          to="/"
-          className="inline-flex h-9 items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--nessa-primary)] px-4 text-[13px] font-semibold text-[var(--nessa-text)] transition-all duration-[var(--t-fast)] hover:bg-[var(--nessa-primary-hover)] active:scale-[0.97]"
-        >
-          Voltar ao início
-        </Link>
-      </EmptyState>
-    </div>
+        Voltar ao início
+      </Link>
+    </EmptyState>
   );
 }
 

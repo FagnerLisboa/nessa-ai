@@ -1,20 +1,34 @@
 <!doctype html>
-<html lang="pt-BR" data-density="comfortable" data-reduce-motion="false">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NESSA AI — Plataforma moderna de Inteligência Artificial. Complexidade interna. Simplicidade externa." />
-    <meta name="theme-color" content="#0B0B10" />
+    <meta name="description" content="NESSA AI — Inteligência que entende você. Converse, crie, pesquise e transforme ideias em resultados." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>NESSA AI — Inteligência que entende você</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>NESSA AI — Plataforma de Inteligência Artificial</title>
+    <script>
+      /* Aplica o tema antes do paint para evitar flash (chave real do store). */
+      (function () {
+        var theme = "dark";
+        try {
+          var raw = localStorage.getItem("nessa:settings:v1");
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.theme === "light") theme = "light";
+          }
+        } catch (e) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <style>
       html, body { margin: 0; padding: 0; background-color: #0B0B10; }
+      html[data-theme="light"], html[data-theme="light"] body { background-color: #F6F6F9; }
     </style>
   </head>
   <body>

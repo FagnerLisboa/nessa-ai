@@ -65,13 +65,10 @@ interface WordmarkProps {
 export function Wordmark({ compact = false, className }: WordmarkProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <ButterflyMark size={compact ? 22 : 26} alive />
+      <ButterflyMark size={compact ? 22 : 26} />
       <span className="sidebar-brand__text inline-flex items-baseline overflow-hidden">
-        <span className="font-display text-[15px] font-extrabold tracking-[0.22em] text-[var(--nessa-text)]">
+        <span className="font-display text-[15px] font-bold tracking-[0.24em] text-[var(--nessa-text)]">
           NESSA
-        </span>
-        <span className="ml-1.5 rounded-[5px] border border-[var(--nessa-hairline)] bg-[var(--nessa-primary-soft)] px-1 py-px text-[9px] font-bold tracking-[0.18em] text-[var(--nessa-accent)]">
-          AI
         </span>
       </span>
     </span>
