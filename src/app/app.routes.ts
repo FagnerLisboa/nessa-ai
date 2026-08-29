@@ -5,7 +5,7 @@ export const routes: Routes = [
     path: "",
     pathMatch: "full",
     loadComponent: () =>
-      import("./home/home.component").then((m) => m.HomeComponent),
+      import("./features/shell/shell.component").then((m) => m.ShellComponent),
   },
   {
     path: "**",

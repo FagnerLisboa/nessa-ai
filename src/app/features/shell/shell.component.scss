@@ -1,0 +1,185 @@
+:host {
+  display: block;
+}
+
+/* ============================================================
+   Grid principal — sidebar fixa (desktop) + conteúdo.
+   ============================================================ */
+.shell {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100dvh;
+}
+
+.shell__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100dvh;
+}
+
+.shell__main {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Conteúdo central — a NESSA.
+   ============================================================ */
+.stage {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.stage__name {
+  margin: 22px 0 0;
+  font-family: var(--nessa-font-display);
+  font-size: clamp(30px, 4.5vw, 44px);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  line-height: 1.1;
+  color: var(--nessa-text);
+}
+
+.stage__line {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--nessa-text-muted);
+}
+
+@media (min-width: 640px) {
+  .stage__break {
+    display: none;
+  }
+}
+
+/* ---------- Entrada escalonada (uma única vez) ---------- */
+@keyframes stage-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stage > * {
+  animation: stage-arrive 0.65s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.stage > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.stage > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+/* ============================================================
+   Fundo ambiente — camadas sutis, confinadas ao conteúdo.
+   ============================================================ */
+.stage-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stage-ambient__glow {
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  width: 640px;
+  height: 640px;
+  max-width: 90vw;
+  max-height: 90vw;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.12), transparent 68%);
+  animation: ambient-drift 26s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
+}
+
+.stage-ambient__glow--alt {
+  top: auto;
+  bottom: -30%;
+  background: radial-gradient(closest-side, rgba(99, 102, 241, 0.08), transparent 68%);
+  animation-duration: 34s;
+  animation-direction: alternate-reverse;
+}
+
+.stage-ambient__grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(245, 245, 247, 0.045) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 78%);
+}
+
+@keyframes ambient-drift {
+  from {
+    transform: translateX(-50%) translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translateX(-50%) translate3d(2%, 2%, 0) scale(1.05);
+  }
+}
+
+/* ============================================================
+   Scrim do drawer (< 1200px).
+   ============================================================ */
+.shell__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: var(--nessa-scrim);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+
+.shell__scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 1200px) {
+  .shell__scrim {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Responsivo — abaixo de 1200px o conteúdo ocupa 100%.
+   ============================================================ */
+@media (max-width: 1199.98px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   Acessibilidade — movimento reduzido.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .stage > *,
+  .stage-ambient__glow {
+    animation: none;
+  }
+}
