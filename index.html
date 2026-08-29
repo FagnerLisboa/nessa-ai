@@ -26,6 +26,23 @@
         background: #f6f6f9;
         color: #191922;
       }
+      app-root:empty::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid rgba(139, 92, 246, 0.25);
+        border-top-color: #8b5cf6;
+        animation: nessa-boot 0.9s linear infinite;
+      }
+      @keyframes nessa-boot {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
     <script>
       (function () {
@@ -39,6 +56,27 @@
     </script>
   </head>
   <body>
-    <app-root></app-root>
+    <app-root data-booting="true"></app-root>
+    <script>
+      /* Se o bootstrap não renderizar nada em até 8s, avisa em vez de deixar a tela em branco. */
+      (function () {
+        setTimeout(function () {
+          var root = document.querySelector("app-root");
+          if (!root || root.childElementCount > 0) return;
+          var box = document.createElement("div");
+          box.setAttribute("role", "alert");
+          box.style.cssText =
+            "min-height:100dvh;display:grid;place-items:center;padding:32px;" +
+            "font-family:'Inter','Manrope',system-ui,sans-serif;text-align:center;";
+          box.innerHTML =
+            '<div style="max-width:440px">' +
+            '<p style="margin:0 0 8px;font-size:15px;font-weight:700;letter-spacing:.3em;color:#F5F5F7">NESSA</p>' +
+            '<p style="margin:0;font-size:13px;line-height:1.6;color:#A1A1AA">' +
+            "A aplicação não carregou. Verifique a conexão e o console do navegador.</p>" +
+            "</div>";
+          root.replaceChildren(box);
+        }, 8000);
+      })();
+    </script>
   </body>
 </html>
