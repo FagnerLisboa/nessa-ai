@@ -1,0 +1,117 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  flex: none;
+  padding: 0 clamp(16px, 3vw, 32px);
+  border-bottom: 1px solid var(--nessa-hairline);
+  background: color-mix(in srgb, var(--nessa-background) 82%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+/* ---------- Botão menu (apenas < 1200px) ---------- */
+.head__menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  margin-left: -8px;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--nessa-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out);
+}
+
+.head__menu:hover {
+  background: var(--nessa-surface-hover);
+  color: var(--nessa-text);
+}
+
+@media (max-width: 1199.98px) {
+  .head__menu {
+    display: inline-flex;
+  }
+}
+
+/* ---------- Título ---------- */
+.head__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--nessa-font-display);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--nessa-text);
+}
+
+/* ---------- Ações ---------- */
+.head__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--nessa-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-out);
+}
+
+.head__icon:hover {
+  background: var(--nessa-surface-hover);
+  color: var(--nessa-text);
+  transform: rotate(12deg);
+}
+
+.head__icon:active {
+  transform: scale(0.92);
+}
+
+.head__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  margin-left: 2px;
+  border: 1px solid var(--nessa-primary-ring);
+  background: var(--nessa-primary-soft);
+  border-radius: var(--radius-full);
+  color: var(--nessa-accent);
+  cursor: pointer;
+  transition:
+    transform var(--t-fast) var(--ease-spring),
+    box-shadow var(--t-fast) var(--ease-out);
+}
+
+.head__avatar:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-glow);
+}

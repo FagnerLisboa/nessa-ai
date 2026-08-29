@@ -1,0 +1,33 @@
+<div class="shell">
+  <app-sidebar [open]="sidebarOpen()" (requestClose)="closeSidebar()" />
+
+  <div class="shell__body">
+    <app-header (requestToggle)="toggleSidebar()" />
+
+    <main class="shell__main">
+      <div class="stage-ambient" aria-hidden="true">
+        <span class="stage-ambient__glow"></span>
+        <span class="stage-ambient__glow stage-ambient__glow--alt"></span>
+        <span class="stage-ambient__grid"></span>
+      </div>
+
+      <section class="stage">
+        <app-nessa-logo [size]="72" />
+
+        <h2 class="stage__name">NESSA</h2>
+
+        <p class="stage__line">
+          Interface preparada para receber a<br class="stage__break" />
+          inteligência artificial.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <div
+    class="shell__scrim"
+    [class.is-open]="sidebarOpen()"
+    aria-hidden="true"
+    (click)="closeSidebar()"
+  ></div>
+</div>

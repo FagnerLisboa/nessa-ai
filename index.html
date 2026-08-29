@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="NESSA AI — plataforma de Inteligência Artificial." />
     <title>NESSA AI</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -30,18 +30,15 @@
     <script>
       (function () {
         try {
-          var raw = localStorage.getItem("nessa:settings:v1");
-          if (raw) {
-            var theme = JSON.parse(raw).theme;
-            if (theme === "light" || theme === "dark") {
-              document.documentElement.dataset.theme = theme;
-            }
+          var theme = localStorage.getItem("nessa:theme");
+          if (theme === "light" || theme === "dark") {
+            document.documentElement.dataset.theme = theme;
           }
         } catch (e) {}
       })();
     </script>
   </head>
   <body>
-    <script type="module" src="/src/main.ts"></script>
+    <app-root></app-root>
   </body>
 </html>
