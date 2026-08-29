@@ -1,0 +1,15 @@
+# ============================================================
+# NESSA AI — Backend (Etapa 2.1 · Fundação)
+# Python 3.12+ · versões estáveis e compatíveis entre si
+# ============================================================
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg[binary]==3.2.3
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# Carregamento do arquivo .env (usado pelo pydantic-settings)
+python-dotenv==1.0.1

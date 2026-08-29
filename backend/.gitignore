@@ -1,0 +1,29 @@
+# ------------------------------------------------------------
+# NESSA AI — Backend
+# ------------------------------------------------------------
+
+# Segredos e ambiente local
+.env
+.env.local
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
