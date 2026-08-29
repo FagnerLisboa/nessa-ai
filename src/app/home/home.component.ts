@@ -1,7 +1,5 @@
 import { Component } from "@angular/core";
 
-import styles from "./home.component.scss?inline";
-
 @Component({
   selector: "app-home",
   standalone: true,
@@ -35,6 +33,6 @@ import styles from "./home.component.scss?inline";
       <p class="tag">AI · fundação Angular 20</p>
     </main>
   `,
-  styles: [styles],
+  styleUrls: ["./home.component.scss"],
 })
 export class HomeComponent {}
