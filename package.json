@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "postbuild": "node tools/inline.mjs",
     "watch": "ng build --watch --configuration development"
   },
   "dependencies": {
