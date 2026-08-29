@@ -1,0 +1,319 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ============================================================
+   Superfície do composer
+   ============================================================ */
+.composer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-composer);
+  background: var(--nessa-surface);
+  border: 1px solid var(--nessa-border);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--t-base) var(--ease-out),
+    box-shadow var(--t-base) var(--ease-out);
+}
+
+.composer:hover {
+  border-color: color-mix(in srgb, var(--nessa-text-muted) 45%, var(--nessa-border));
+}
+
+.composer.is-focused {
+  border-color: var(--nessa-primary);
+  box-shadow:
+    0 0 0 3px var(--nessa-primary-soft),
+    var(--shadow-sm);
+}
+
+.composer__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Anexos
+   ============================================================ */
+.composer__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px 0;
+  list-style: none;
+}
+
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  padding: 5px 6px 5px 10px;
+  border: 1px solid var(--nessa-hairline);
+  border-radius: var(--radius-full);
+  background: var(--nessa-surface-2);
+  animation: chip-in 0.2s var(--ease-out) both;
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.file-chip__icon {
+  flex: none;
+  color: var(--nessa-accent);
+}
+
+.file-chip__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--nessa-text);
+}
+
+.file-chip__size {
+  flex: none;
+  font-size: 11px;
+  color: var(--nessa-text-muted);
+}
+
+.file-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--nessa-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out);
+}
+
+.file-chip__remove:hover {
+  background: var(--nessa-danger-soft);
+  color: var(--nessa-danger);
+}
+
+/* ============================================================
+   Campo
+   ============================================================ */
+.composer__field {
+  width: 100%;
+  min-height: 54px;
+  max-height: 220px;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--nessa-text);
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 1.55;
+  padding: 16px 18px 4px;
+}
+
+.composer__field::placeholder {
+  color: color-mix(in srgb, var(--nessa-text-muted) 75%, transparent);
+}
+
+.composer__file-input {
+  display: none;
+}
+
+/* ============================================================
+   Menu contextual do "+"
+   ============================================================ */
+.composer__menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 12px;
+  z-index: var(--z-pop);
+  min-width: 206px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: var(--nessa-surface-2);
+  border: 1px solid var(--nessa-hairline);
+  box-shadow: var(--shadow-pop);
+  animation: menu-in 0.16s var(--ease-out) both;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+
+.menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--nessa-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease-out);
+}
+
+.menu__item:hover,
+.menu__item:focus-visible {
+  background: var(--nessa-surface-hover);
+  outline: none;
+}
+
+.menu__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  color: var(--nessa-text-muted);
+  transition: color var(--t-fast) var(--ease-out);
+}
+
+.menu__item:hover .menu__icon {
+  color: var(--nessa-accent);
+}
+
+/* ============================================================
+   Barra de ações
+   ============================================================ */
+.composer__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px 8px;
+}
+
+.bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--nessa-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-out);
+}
+
+.bar__btn:hover {
+  background: var(--nessa-surface-hover);
+  color: var(--nessa-text);
+}
+
+.bar__btn:active {
+  transform: scale(0.9);
+}
+
+.bar__btn.is-open {
+  background: var(--nessa-primary-soft);
+  color: var(--nessa-accent);
+}
+
+.composer__hint {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--nessa-text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.composer__hint-key {
+  padding: 1px 5px;
+  border: 1px solid var(--nessa-border);
+  border-radius: 5px;
+  background: var(--nessa-surface-2);
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 639.98px) {
+  .composer__hint {
+    display: none;
+  }
+}
+
+.composer__spacer {
+  flex: 1;
+}
+
+.bar__btn--send {
+  background: var(--nessa-primary);
+  color: var(--nessa-text);
+  box-shadow: var(--shadow-xs);
+  transition:
+    background var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-out),
+    opacity var(--t-fast) var(--ease-out);
+}
+
+.bar__btn--send:hover:not(:disabled) {
+  background: var(--nessa-primary-hover);
+  color: var(--nessa-text);
+}
+
+.bar__btn--send:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Status (feedback honesto, reserva de espaço)
+   ============================================================ */
+.composer__status {
+  margin: 0;
+  min-height: 17px;
+  padding: 0 18px 11px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--nessa-text-muted);
+  opacity: 0;
+  transform: translateY(2px);
+  transition:
+    opacity var(--t-base) var(--ease-out),
+    transform var(--t-base) var(--ease-out);
+}
+
+.composer__status.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer__menu,
+  .file-chip {
+    animation: none;
+  }
+}

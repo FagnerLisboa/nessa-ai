@@ -21,8 +21,14 @@ let html = readFileSync(indexPath, "utf8");
 
 const readAsset = (file) => readFileSync(join(distDir, file.replace(/^\//, "")), "utf8");
 
-/** Escapa sequências que fechariam a tag <script> prematuramente. */
-const safeJs = (code) => code.replaceAll("</script", "<\\/script");
+/**
+ * Escapa sequências que o parser HTML interpretaria dentro de um
+ * <script> inline: fechamento prematuro da tag e início de comentário.
+ */
+const safeJs = (code) => code.replaceAll("</script", "<\\/script").replaceAll("<!--", "<\\!--");
+
+let scriptsInlined = 0;
+let stylesInlined = 0;
 
 /* 1. Embute os módulos locais (polyfills + main). */
 html = html.replace(
@@ -32,6 +38,7 @@ html = html.replace(
     if (!src || /^https?:/i.test(src) || !existsSync(join(distDir, src.replace(/^\//, "")))) {
       return match;
     }
+    scriptsInlined += 1;
     return `<script type="module">${safeJs(readAsset(src))}</script>`;
   },
 );
@@ -47,8 +54,17 @@ html = html.replace(/<link rel="stylesheet" href="([^"]+)"[^>]*>/g, (match, href
   if (/^https?:/i.test(href) || !existsSync(join(distDir, href.replace(/^\//, "")))) {
     return match;
   }
+  stylesInlined += 1;
   return `<style>${readAsset(href)}</style>`;
 });
 
 writeFileSync(indexPath, html, "utf8");
-console.log("[inline] dist/index.html auto-contido gerado com sucesso.");
+
+const remainingExternal = (html.match(/<script[^>]*src="[^"]*"/g) ?? []).filter(
+  (tag) => !/^https?:/i.test(tag),
+).length;
+
+console.log(
+  `[inline] OK — scripts: ${scriptsInlined} · styles: ${stylesInlined} · ` +
+    `html: ${(html.length / 1024).toFixed(1)} kB · referências externas locais: ${remainingExternal}`,
+);
