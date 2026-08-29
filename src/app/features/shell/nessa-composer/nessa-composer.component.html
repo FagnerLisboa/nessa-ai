@@ -1,0 +1,136 @@
+<div class="composer" [class.is-focused]="focused()">
+  @if (attachments().length > 0) {
+    <ul class="composer__files" aria-label="Arquivos anexados">
+      @for (file of attachments(); track file.name; let i = $index) {
+        <li class="file-chip">
+          <svg class="file-chip__icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3.8h8l4 4v12.4H6Z" />
+            <path d="M14 3.8v4h4" />
+          </svg>
+          <span class="file-chip__name">{{ file.name }}</span>
+          <span class="file-chip__size">{{ file.sizeLabel }}</span>
+          <button type="button" class="file-chip__remove" (click)="removeAttachment(i)" [attr.aria-label]="'Remover ' + file.name">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <label class="composer__sr" for="nessa-message">Mensagem para a NESSA</label>
+  <textarea
+    #field
+    id="nessa-message"
+    class="composer__field"
+    rows="1"
+    placeholder="Mensagem para a NESSA..."
+    autocomplete="off"
+    [value]="text()"
+    (input)="onInput($event)"
+    (keydown.enter)="onEnter($event)"
+    (focus)="focused.set(true)"
+    (blur)="focused.set(false)"
+  ></textarea>
+
+  @if (menuOpen()) {
+    <div class="composer__menu" role="menu" aria-label="Criar com a NESSA">
+      @for (action of actions; track action.id) {
+        <button type="button" role="menuitem" class="menu__item" (click)="runAction(action)">
+          <span class="menu__icon">
+            @switch (action.icon) {
+              @case ("image") {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="5" width="16" height="14" rx="2" />
+                  <circle cx="9" cy="10" r="1.4" />
+                  <path d="m5.5 17.5 4.5-4 3 2.6 2.5-2.1 3 3.5" />
+                </svg>
+              }
+              @case ("play") {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="5" width="16" height="14" rx="2.5" />
+                  <path d="m10.4 9.2 4.6 2.8-4.6 2.8Z" />
+                </svg>
+              }
+              @case ("mic") {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9.2" y="3.5" width="5.6" height="10" rx="2.8" />
+                  <path d="M6 11.5a6 6 0 0 0 12 0M12 17.5v3M9.5 20.5h5" />
+                </svg>
+              }
+              @case ("search") {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="6" />
+                  <path d="m19.5 19.5-4-4" />
+                </svg>
+              }
+              @case ("doc") {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 3.8h8l4 4v12.4H6Z" />
+                  <path d="M14 3.8v4h4M9 12h6M9 15.4h6" />
+                </svg>
+              }
+            }
+          </span>
+          {{ action.label }}
+        </button>
+      }
+    </div>
+  }
+
+  <div class="composer__bar">
+    <button
+      type="button"
+      class="bar__btn"
+      [class.is-open]="menuOpen()"
+      (click)="toggleMenu()"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="menuOpen()"
+      aria-label="Criar com a NESSA"
+      title="Criar"
+    >
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </button>
+
+    <button type="button" class="bar__btn" (click)="fileInput.click()" aria-label="Anexar arquivo" title="Anexar">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 11.6 6.3-6.3a3 3 0 0 1 4.3 4.3l-7.8 7.7a4.7 4.7 0 0 1-6.6-6.6l7.3-7.3" />
+      </svg>
+    </button>
+    <input #fileInput type="file" multiple class="composer__file-input" (change)="onFiles($event)" />
+
+    <span class="composer__hint">
+      <span class="composer__hint-key">Enter</span>
+      para enviar
+    </span>
+
+    <span class="composer__spacer"></span>
+
+    <button type="button" class="bar__btn" (click)="voiceHint()" aria-label="Usar voz" title="Voz">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9.2" y="3.5" width="5.6" height="10" rx="2.8" />
+        <path d="M6 11.5a6 6 0 0 0 12 0M12 17.5v3M9.5 20.5h5" />
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="bar__btn bar__btn--send"
+      [disabled]="!canSend()"
+      (click)="submit()"
+      aria-label="Enviar mensagem"
+      title="Enviar"
+    >
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 19V5M6 11l6-6 6 6" />
+      </svg>
+    </button>
+  </div>
+
+  <p class="composer__status" role="status" aria-live="polite" [class.is-visible]="status() !== null">
+    {{ status() ?? "" }}
+  </p>
+</div>

@@ -23,46 +23,64 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ============================================================
-   Conteúdo central — a NESSA.
+   Palco central — borboleta, marca, convite, composer.
    ============================================================ */
 .stage {
   position: relative;
   z-index: 1;
-  flex: 1;
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 44px 20px 56px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 48px 24px;
 }
 
-.stage__name {
-  margin: 22px 0 0;
+.stage__wordmark {
+  margin: 20px 0 0;
   font-family: var(--nessa-font-display);
-  font-size: clamp(30px, 4.5vw, 44px);
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.42em;
-  text-indent: 0.42em;
-  line-height: 1.1;
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
   color: var(--nessa-text);
 }
 
-.stage__line {
-  margin: 14px 0 0;
-  font-size: 14.5px;
-  line-height: 1.7;
+.stage__title {
+  margin: 18px 0 0;
+  max-width: 18ch;
+  font-family: var(--nessa-font-display);
+  font-size: clamp(26px, 4.2vw, 38px);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  color: var(--nessa-text);
+}
+
+.stage__subtitle {
+  margin: 12px 0 0;
+  max-width: 42ch;
+  font-size: 15px;
+  line-height: 1.65;
   color: var(--nessa-text-muted);
 }
 
-@media (min-width: 640px) {
-  .stage__break {
-    display: none;
-  }
+.stage__composer {
+  width: 100%;
+  max-width: 720px;
+  margin-top: 36px;
+  text-align: left;
+}
+
+.stage__suggestions {
+  margin-top: 18px;
 }
 
 /* ---------- Entrada escalonada (uma única vez) ---------- */
@@ -78,19 +96,31 @@
 }
 
 .stage > * {
-  animation: stage-arrive 0.65s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: stage-arrive 0.65s var(--ease-out) both;
 }
 
 .stage > *:nth-child(2) {
-  animation-delay: 0.08s;
+  animation-delay: 0.07s;
 }
 
 .stage > *:nth-child(3) {
-  animation-delay: 0.16s;
+  animation-delay: 0.14s;
+}
+
+.stage > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.stage > *:nth-child(5) {
+  animation-delay: 0.28s;
+}
+
+.stage > *:nth-child(6) {
+  animation-delay: 0.36s;
 }
 
 /* ============================================================
-   Fundo ambiente — camadas sutis, confinadas ao conteúdo.
+   Fundo ambiente — camadas sutis atrás do palco.
    ============================================================ */
 .stage-ambient {
   position: absolute;
@@ -102,21 +132,21 @@
 
 .stage-ambient__glow {
   position: absolute;
-  top: -18%;
+  top: -16%;
   left: 50%;
-  width: 640px;
-  height: 640px;
-  max-width: 90vw;
-  max-height: 90vw;
+  width: 680px;
+  height: 680px;
+  max-width: 92vw;
+  max-height: 92vw;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.12), transparent 68%);
-  animation: ambient-drift 26s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
+  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.11), transparent 68%);
+  animation: ambient-drift 26s var(--ease-out) infinite alternate;
 }
 
 .stage-ambient__glow--alt {
   top: auto;
-  bottom: -30%;
+  bottom: -32%;
   background: radial-gradient(closest-side, rgba(99, 102, 241, 0.08), transparent 68%);
   animation-duration: 34s;
   animation-direction: alternate-reverse;
@@ -127,8 +157,8 @@
   inset: 0;
   background-image: radial-gradient(rgba(245, 245, 247, 0.045) 1px, transparent 1px);
   background-size: 30px 30px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 78%);
+  mask-image: radial-gradient(ellipse 82% 58% at 50% 26%, black 18%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 82% 58% at 50% 26%, black 18%, transparent 78%);
 }
 
 @keyframes ambient-drift {
