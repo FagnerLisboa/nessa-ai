@@ -13,8 +13,10 @@ Arquitetura futura:
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
@@ -48,6 +50,32 @@ app.add_middleware(
 
 # Rotas versionadas
 app.include_router(api_router, prefix="/api/v1")
+
+
+# ------------------------------------------------------------
+# Tratamento básico de erros — formato estável consumido pelo
+# frontend Angular (code · message · status · details).
+# ------------------------------------------------------------
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    """Normaliza erros de validação de entrada (422)."""
+    details = [
+        {
+            "loc": [str(part) for part in error.get("loc", [])],
+            "msg": str(error.get("msg", "")),
+            "type": str(error.get("type", "")),
+        }
+        for error in exc.errors()
+    ]
+    return JSONResponse(
+        status_code=422,
+        content={
+            "code": "VALIDATION_ERROR",
+            "message": "Dados inválidos na requisição.",
+            "status": 422,
+            "details": details,
+        },
+    )
 
 
 @app.get("/health", tags=["health"])
