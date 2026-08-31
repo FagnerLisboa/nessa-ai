@@ -13,10 +13,13 @@ Arquitetura futura:
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exception_handlers import (
+    http_exception_handler as fastapi_http_exception_handler,
+)
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
@@ -76,6 +79,40 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "details": details,
         },
     )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException) -> Response:
+    """Normaliza exceções HTTP para o envelope da NESSA.
+
+    O caso mais comum é o corpo que não chega como JSON válido
+    (aspas quebradas no terminal ou codificação fora de UTF-8),
+    reportado pelo FastAPI como HTTP 400 genérico. As demais
+    exceções seguem para o handler padrão do FastAPI.
+    """
+    detail = exc.detail if isinstance(exc.detail, str) else ""
+
+    if exc.status_code == 400 and "parsing the body" in detail:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "code": "INVALID_JSON_BODY",
+                "message": (
+                    "O corpo da requisição não é um JSON válido. "
+                    "Envie com Content-Type: application/json e codificação UTF-8."
+                ),
+                "status": 400,
+                "details": {
+                    "exemplo": (
+                        'curl -X POST http://127.0.0.1:8000/api/v1/chat '
+                        '-H "Content-Type: application/json; charset=utf-8" '
+                        "--data-binary '{\"message\": \"Olá, NESSA!\"}'"
+                    )
+                },
+            },
+        )
+
+    return await fastapi_http_exception_handler(request, exc)
 
 
 @app.get("/health", tags=["health"])

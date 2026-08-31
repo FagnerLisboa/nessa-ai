@@ -97,6 +97,7 @@ O servidor sobe em `http://127.0.0.1:8000`.
 | ------------ | ---------------------------------------------------------------------------- |
 | `GET /health`    | `{"status": "ok", "service": "nessa-api"}`                               |
 | `GET /api/v1/health` | `{"status": "ok", "service": "nessa-api", "version": "v1"}`           |
+| `POST /api/v1/chat` | `{"message": "Olá NESSA"}` → `{"response": "Olá! Como posso ajudar você hoje?"}` |
 | `GET /docs`  | Swagger UI interativo                                                        |
 | `GET /redoc` | ReDoc                                                                        |
 
@@ -125,3 +126,37 @@ alembic upgrade head
 - `.env` está no `.gitignore` — nunca commite segredos.
 - Nenhuma senha, token ou API Key existe no código — apenas contratos e placeholders.
 - CORS com origens explícitas via `CORS_ORIGINS`.
+
+## Testes
+
+```bash
+pytest          # 13 testes: endpoint, validação, body JSON e unidade do ChatService
+```
+
+## Resolução de problemas
+
+### `"detail": "There was an error parsing the body"` (HTTP 400)
+
+O corpo enviado **não chegou como JSON válido** — causa típica em terminais Windows: aspas quebradas pelo shell ou acentos codificados fora de UTF-8 (codepage cp1252). A API responde no envelope padrão com `code: "INVALID_JSON_BODY"`.
+
+Correto (Git Bash / macOS / Linux):
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/chat \
+  -H "Content-Type: application/json; charset=utf-8" \
+  --data-binary '{"message": "Olá, NESSA!"}'
+```
+
+Correto (PowerShell, forçando UTF-8):
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/api/v1/chat -Method Post `
+  -ContentType "application/json; charset=utf-8" `
+  -Body ([System.Text.Encoding]::UTF8.GetBytes('{"message": "Olá, NESSA!"}'))
+```
+
+Resposta esperada:
+
+```json
+{ "response": "Olá! Como posso ajudar você hoje?" }
+```
