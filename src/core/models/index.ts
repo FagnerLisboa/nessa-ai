@@ -108,3 +108,21 @@ export interface AIProvider {
   model: string;
   status: ProviderStatus;
 }
+
+/* ------------------------------------------------------------
+   Modelos de IA selecionáveis no composer.
+   O `id` é o identificador que será enviado à API quando o
+   backend expuser o roteamento de motores (AI Gateway).
+   ------------------------------------------------------------ */
+export interface AiModel {
+  id: string;
+  label: string;
+}
+
+export const AI_MODELS: AiModel[] = [
+  { id: "nessa", label: "NESSA" },
+  { id: "qwen", label: "Qwen" },
+  { id: "gemini", label: "Gemini" },
+];
+
+export const DEFAULT_AI_MODEL_ID = "nessa";
