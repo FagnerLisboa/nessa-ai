@@ -129,14 +129,20 @@
     <button
       type="button"
       class="bar__btn bar__btn--send"
-      [disabled]="!canSend()"
+      [disabled]="!canSend() || sending()"
       (click)="submit()"
-      aria-label="Enviar mensagem"
-      title="Enviar"
+      [attr.aria-label]="sending() ? 'Enviando mensagem' : 'Enviar mensagem'"
+      [attr.title]="sending() ? 'Enviando…' : 'Enviar'"
     >
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 19V5M6 11l6-6 6 6" />
-      </svg>
+      @if (sending()) {
+        <svg class="composer__spinner" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 3a9 9 0 1 0 9 9" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5M6 11l6-6 6 6" />
+        </svg>
+      }
     </button>
   </div>
 

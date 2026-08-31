@@ -1,9 +1,8 @@
 import { Component, computed, DestroyRef, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { RouterLink } from "@angular/router";
 
 import type { Conversation } from "../../../core/models";
-import { ConversationsService } from "../../../core/services";
+import { ConversationService } from "../../../core/services";
 import { ActionMenuComponent, type MenuAction } from "../../shared/components/action-menu.component";
 import { PageHeaderComponent } from "../../shared/components/page-header.component";
 import { SearchBoxComponent } from "../../shared/components/search-box.component";
@@ -12,12 +11,12 @@ import { StateViewComponent } from "../../shared/components/state-view.component
 @Component({
   selector: "app-conversations-page",
   standalone: true,
-  imports: [RouterLink, PageHeaderComponent, SearchBoxComponent, StateViewComponent, ActionMenuComponent],
+  imports: [PageHeaderComponent, SearchBoxComponent, StateViewComponent, ActionMenuComponent],
   templateUrl: "./conversations.page.html",
   styleUrl: "./conversations.page.scss",
 })
 export class ConversationsPage {
-  private readonly service = inject(ConversationsService);
+  private readonly service = inject(ConversationService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly status = signal<"loading" | "ready" | "error">("loading");
@@ -31,10 +30,7 @@ export class ConversationsPage {
     return all.filter((item) => item.title.toLowerCase().includes(term));
   });
 
-  protected readonly menuActions: MenuAction[] = [
-    { id: "duplicate", label: "Duplicar" },
-    { id: "delete", label: "Excluir", danger: true },
-  ];
+  protected readonly menuActions: MenuAction[] = [{ id: "delete", label: "Excluir", danger: true }];
 
   constructor() {
     this.load();
@@ -45,13 +41,14 @@ export class ConversationsPage {
   }
 
   protected onAction(id: string, actionId: string): void {
-    if (actionId === "duplicate") {
-      this.service.duplicate(id);
-    } else if (actionId === "delete") {
-      this.service.remove(id);
-    }
-    this.items.set([...this.items()]);
-    void this.service.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data) => this.items.set(data));
+    if (actionId !== "delete") return;
+    this.service
+      .remove(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.load(),
+        error: () => this.load(),
+      });
   }
 
   private load(): void {

@@ -1,8 +1,16 @@
 /* ============================================================
    NESSA AI — Modelos de domínio (core/models)
-   Contratos tipados das áreas da plataforma. Os dados desta
-   etapa são mockados em core/services — sem backend, sem banco.
+   Contratos tipados das áreas da plataforma. Conversas e chat
+   são persistidos pelo backend FastAPI; as demais áreas seguem
+   com dados de demonstração em core/services.
    ============================================================ */
+
+/** Mensagem individual dentro de uma conversa. */
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
 
 export interface Conversation {
   id: string;
@@ -10,6 +18,8 @@ export interface Conversation {
   messageCount: number;
   /** Data já formatada (pt-BR) para exibição. */
   displayDate: string;
+  /** Mensagens da conversa (presentes quando carregadas em detalhe). */
+  messages?: ChatMessage[];
 }
 
 export type AgentStatus = "ativo" | "pausado";
