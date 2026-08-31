@@ -93,9 +93,8 @@ export class NessaComposerComponent {
     effect(() => {
       const tick = this.seedTick();
       if (tick > 0) {
-        this.text.set(this.seed());
+        this.setFieldValue(this.seed());
         this.focusField();
-        this.autosize();
       }
     });
   }
@@ -122,9 +121,8 @@ export class NessaComposerComponent {
       this.showStatus("Voz estará disponível quando o motor de áudio for conectado.");
       return;
     }
-    this.text.set(action.prefill);
+    this.setFieldValue(action.prefill);
     this.focusField();
-    this.autosize();
   }
 
   protected voiceHint(): void {
@@ -149,9 +147,8 @@ export class NessaComposerComponent {
 
   protected submit(): void {
     if (!this.canSend()) return;
-    this.text.set("");
+    this.setFieldValue("");
     this.attachments.set([]);
-    this.autosize();
     this.showStatus("Mensagem registrada. A resposta chega quando o motor de IA estiver conectado.");
     this.focusField();
   }
@@ -160,6 +157,21 @@ export class NessaComposerComponent {
     if (this.statusTimer !== undefined) window.clearTimeout(this.statusTimer);
     this.status.set(message);
     this.statusTimer = window.setTimeout(() => this.status.set(null), 4600);
+  }
+
+  /**
+   * Escrita programática no campo: sincroniza DOM + signal + altura.
+   *
+   * O textarea é não-controlado (nenhuma binding escreve no valor),
+   * então esta é a ÚNICA porta de escrita — usada por sugestões,
+   * ações do menu "+" e envio. Estado externo (ex.: o modelo de IA
+   * selecionado) não passa por aqui e jamais altera o texto digitado.
+   */
+  private setFieldValue(value: string): void {
+    this.text.set(value);
+    const el = this.field()?.nativeElement;
+    if (el) el.value = value;
+    this.autosize();
   }
 
   private focusField(): void {
