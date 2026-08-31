@@ -92,8 +92,16 @@ def get_conversation(
 def delete_conversation(
     conversation_id: UUID,
     db: Session = Depends(get_db),
-) -> Response | JSONResponse:
-    """Exclui a conversa e todas as suas mensagens."""
+) -> Response:
+    """Exclui a conversa e todas as suas mensagens.
+
+    NOTA: a anotação de retorno deve ser a classe `Response` (e não uma
+    união como `Response | JSONResponse`). Em uma união o FastAPI deriva
+    um response model e, com status_code=204, lança:
+        AssertionError: Status code 204 must not have a response body
+    Instâncias de JSONResponse (o 404) continuam sendo repassadas
+    intactas em runtime, pois todo JSONResponse é um Response.
+    """
     service = ConversationService(db)
     deleted = service.delete(conversation_id)
     if not deleted:
