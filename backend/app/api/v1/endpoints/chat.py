@@ -4,17 +4,20 @@ NESSA AI — Endpoint de Chat
 POST /api/v1/chat
 
 O endpoint é fino por design: validação de entrada via schema
-Pydantic, lógica no ChatService e IA atrás da interface
-AIProvider (mock nesta etapa).
+Pydantic, sessão do banco via dependência, lógica no ChatService
+e IA atrás da interface AIProvider (mock nesta etapa).
 """
 
 from functools import lru_cache
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
+from app.core.database import get_db
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.chat_service import ChatService, ChatServiceError
+from app.services.conversation_service import ConversationNotFoundError
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -31,17 +34,32 @@ def get_chat_service() -> ChatService:
     status_code=200,
     summary="Conversar com a NESSA",
     responses={
+        404: {"description": "Conversa informada não encontrada"},
         422: {"description": "Mensagem inválida ou vazia"},
         502: {"description": "Falha no provedor de IA"},
     },
 )
 async def chat(
     payload: ChatRequest,
+    db: Session = Depends(get_db),
     service: ChatService = Depends(get_chat_service),
 ) -> ChatResponse:
     """Recebe a mensagem do usuário e retorna a resposta da NESSA."""
     try:
-        return await service.reply(payload.message)
+        return await service.reply(
+            payload.message,
+            db=db,
+            conversation_id=payload.conversation_id,
+        )
+    except ConversationNotFoundError as exc:
+        return JSONResponse(
+            status_code=404,
+            content={
+                "code": "CONVERSATION_NOT_FOUND",
+                "message": str(exc),
+                "status": 404,
+            },
+        )
     except ChatServiceError as exc:
         return JSONResponse(
             status_code=502,
