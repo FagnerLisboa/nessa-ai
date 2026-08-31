@@ -11,6 +11,9 @@ import {
   viewChild,
 } from "@angular/core";
 
+import { AppState } from "../../../../core/state/app.state";
+import { ModelSelectorComponent } from "../../../shared/components/model-selector.component";
+
 interface AttachedFile {
   name: string;
   sizeLabel: string;
@@ -51,12 +54,16 @@ function formatBytes(bytes: number): string {
 @Component({
   selector: "app-nessa-composer",
   standalone: true,
+  imports: [ModelSelectorComponent],
   templateUrl: "./nessa-composer.component.html",
   styleUrl: "./nessa-composer.component.scss",
 })
 export class NessaComposerComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly host = inject(ElementRef<HTMLElement>);
+
+  /** Modelo de IA selecionado — estado global, pronto para a API. */
+  protected readonly appState = inject(AppState);
 
   /** Prefill vindo das sugestões (texto + contador de acionamento). */
   readonly seed = input<string>("");
