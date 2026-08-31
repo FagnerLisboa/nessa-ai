@@ -13,16 +13,18 @@ Arquitetura futura:
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exception_handlers import (
     http_exception_handler as fastapi_http_exception_handler,
 )
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
+from app.core.middleware import JsonBodyGuardMiddleware
 
 settings = get_settings()
 
@@ -41,6 +43,11 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+# Guarda do body JSON — deve ser registrado ANTES do CORS para que o CORS
+# fique externo e os erros 400 de body também recebam cabeçalhos CORS.
+# Valida UTF-8/JSON ANTES do FastAPI/Pydantic (ver core/middleware.py).
+app.add_middleware(JsonBodyGuardMiddleware)
 
 # CORS — origens explícitas vindas de CORS_ORIGINS (sem '*' como padrão).
 app.add_middleware(
@@ -81,14 +88,18 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException) -> Response:
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> Response:
     """Normaliza exceções HTTP para o envelope da NESSA.
 
-    O caso mais comum é o corpo que não chega como JSON válido
-    (aspas quebradas no terminal ou codificação fora de UTF-8),
-    reportado pelo FastAPI como HTTP 400 genérico. As demais
-    exceções seguem para o handler padrão do FastAPI.
+    Registrado na classe BASE do Starlette (e não em fastapi.HTTPException)
+    porque o erro de parse do body é levantado como
+    starlette.exceptions.HTTPException — a classe base. O lookup de handlers
+    do Starlette percorre o __mro__ da exceção levantada, que NÃO inclui a
+    subclasse fastapi.HTTPException; registrar na base casa ambos os casos.
+
+    (A correção principal dos erros de body está no middleware
+    JsonBodyGuardMiddleware; este handler é defesa em profundidade.)
     """
     detail = exc.detail if isinstance(exc.detail, str) else ""
 

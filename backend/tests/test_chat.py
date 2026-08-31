@@ -120,6 +120,48 @@ def test_chat_rejects_missing_message(client):
 
 
 # ------------------------------------------------------------
+# Parsing do body (regressão — normalizado pelo middleware
+# JsonBodyGuardMiddleware para HTTP 400 + INVALID_JSON_BODY)
+# ------------------------------------------------------------
+def test_chat_rejects_invalid_utf8_body(client):
+    # \xe1 é "á" em latin-1 — sequência inválida em UTF-8.
+    response = client.post(
+        CHAT_URL,
+        content=b'{"message": "Ol\xe1, NESSA!"}',
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 400
+    body = response.json()
+    assert body["code"] == "INVALID_JSON_BODY"
+    assert body["status"] == 400
+
+
+def test_chat_rejects_malformed_json_body(client):
+    # UTF-8 válido, mas JSON malformado (sem aspas nas chaves).
+    response = client.post(
+        CHAT_URL,
+        content="{message: Olá, NESSA!}".encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 400
+    assert response.json()["code"] == "INVALID_JSON_BODY"
+
+
+def test_chat_accepts_accented_utf8_message(client):
+    # UTF-8 válido + JSON válido deve passar pelo middleware e responder 200.
+    response = client.post(
+        CHAT_URL,
+        content='{"message": "Olá, NESSA!"}'.encode("utf-8"),
+        headers={"Content-Type": "application/json; charset=utf-8"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["response"] == EXPECTED_REPLY
+
+
+# ------------------------------------------------------------
 # Health (regressão)
 # ------------------------------------------------------------
 def test_health_keeps_working(client):
