@@ -349,9 +349,23 @@
   }
 }
 
+/* Spinner do botão de envio durante a requisição. */
+.composer__spinner {
+  animation: composer-spin 0.8s linear infinite;
+}
+
+@keyframes composer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .composer__menu,
   .file-chip {
     animation: none;
+  }
+  .composer__spinner {
+    animation-duration: 1.6s;
   }
 }

@@ -10,7 +10,9 @@ import {
   signal,
   viewChild,
 } from "@angular/core";
+import { firstValueFrom } from "rxjs";
 
+import { ChatService } from "../../../../core/services/chat.service";
 import { AppState } from "../../../../core/state/app.state";
 import { ModelSelectorComponent } from "../../../shared/components/model-selector.component";
 
@@ -65,6 +67,9 @@ export class NessaComposerComponent {
   /** Modelo de IA selecionado — estado global, pronto para a API. */
   protected readonly appState = inject(AppState);
 
+  /** Integração real com o backend (POST /api/v1/chat). */
+  private readonly chatService = inject(ChatService);
+
   /** Prefill vindo das sugestões (texto + contador de acionamento). */
   readonly seed = input<string>("");
   readonly seedTick = input<number>(0);
@@ -76,6 +81,8 @@ export class NessaComposerComponent {
   protected readonly menuOpen = signal(false);
   protected readonly attachments = signal<AttachedFile[]>([]);
   protected readonly status = signal<string | null>(null);
+  /** True enquanto a requisição ao backend está em curso. */
+  protected readonly sending = signal(false);
 
   protected readonly canSend = computed(
     () => this.text().trim().length > 0 || this.attachments().length > 0,
@@ -145,17 +152,53 @@ export class NessaComposerComponent {
     this.attachments.update((current) => current.filter((_, i) => i !== index));
   }
 
-  protected submit(): void {
-    if (!this.canSend()) return;
-    this.setFieldValue("");
-    this.attachments.set([]);
-    this.showStatus("Mensagem registrada. A resposta chega quando o motor de IA estiver conectado.");
-    this.focusField();
+  protected async submit(): Promise<void> {
+    if (!this.canSend() || this.sending()) return;
+    const message = this.text().trim();
+    if (!message) return;
+
+    this.sending.set(true);
+    this.setStatus("A NESSA está respondendo…");
+
+    try {
+      const response = await firstValueFrom(
+        this.chatService.send({
+          message,
+          conversation_id: this.appState.currentConversation()?.id ?? undefined,
+          model: this.appState.selectedModelId(),
+        }),
+      );
+
+      this.appState.recordExchange({
+        userMessage: message,
+        assistantMessage: response.response,
+        conversationId: response.conversation_id,
+      });
+
+      this.setFieldValue("");
+      this.attachments.set([]);
+      this.showStatus(response.response);
+      this.focusField();
+    } catch {
+      // Mantém o texto digitado para o usuário tentar novamente.
+      this.showStatus("Não foi possível enviar agora. Verifique a conexão e tente novamente.");
+    } finally {
+      this.sending.set(false);
+    }
   }
 
-  private showStatus(message: string): void {
-    if (this.statusTimer !== undefined) window.clearTimeout(this.statusTimer);
+  /** Define o status sem auto-limpeza (usado enquanto envia). */
+  private setStatus(message: string): void {
+    if (this.statusTimer !== undefined) {
+      window.clearTimeout(this.statusTimer);
+      this.statusTimer = undefined;
+    }
     this.status.set(message);
+  }
+
+  /** Define o status com auto-limpeza (feedback de resultado). */
+  private showStatus(message: string): void {
+    this.setStatus(message);
     this.statusTimer = window.setTimeout(() => this.status.set(null), 4600);
   }
 

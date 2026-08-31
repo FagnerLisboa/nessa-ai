@@ -13,10 +13,12 @@ import {
   AI_MODELS,
   DEFAULT_AI_MODEL_ID,
   type AiModel,
+  type ChatMessage,
   type Conversation,
   type UserProfile,
 } from "../models";
 import { ThemeService } from "../services";
+import { formatDisplayDate } from "../utils/format-date";
 
 @Injectable({ providedIn: "root" })
 export class AppState {
@@ -60,6 +62,49 @@ export class AppState {
 
   setConversation(conversation: Conversation | null): void {
     this.currentConversation.set(conversation);
+  }
+
+  /**
+   * Registra uma troca concluída (mensagem do usuário + resposta da
+   * NESSA) na conversa atual, preservando o conversation_id para as
+   * próximas mensagens. Cria a conversa localmente quando é a primeira.
+   */
+  recordExchange(input: {
+    userMessage: string;
+    assistantMessage: string;
+    conversationId: string;
+  }): void {
+    const userMsg: ChatMessage = { id: this.uid(), role: "user", content: input.userMessage };
+    const assistantMsg: ChatMessage = {
+      id: this.uid(),
+      role: "assistant",
+      content: input.assistantMessage,
+    };
+
+    const existing = this.currentConversation();
+    if (existing && existing.id === input.conversationId) {
+      this.currentConversation.set({
+        ...existing,
+        messageCount: existing.messageCount + 2,
+        messages: [...(existing.messages ?? []), userMsg, assistantMsg],
+      });
+      return;
+    }
+
+    this.currentConversation.set({
+      id: input.conversationId,
+      title: input.userMessage,
+      messageCount: 2,
+      displayDate: formatDisplayDate(new Date().toISOString()),
+      messages: [userMsg, assistantMsg],
+    });
+  }
+
+  private uid(): string {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+    return `m-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
   clear(): void {

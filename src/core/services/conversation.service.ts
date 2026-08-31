@@ -1,65 +1,80 @@
 /* ============================================================
    NESSA AI — ConversationService (core/services)
-   CRUD futuro de conversas no backend FastAPI.
+   Acesso às conversas persistidas pelo backend FastAPI.
 
-   ETAPA ATUAL: apenas contratos. Nenhuma API é chamada.
+   Faz o mapeamento dos DTOs do backend (snake_case) para os
+   modelos de domínio do frontend na fronteira do serviço.
    ============================================================ */
 
 import { Injectable, inject } from "@angular/core";
-import type { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 
-import type { Conversation } from "../models";
-import type { ApiResponse, Pagination } from "../models/api.models";
-import { ApiService, notImplemented } from "./api.service";
+import type { ChatMessage, Conversation } from "../models";
+import { formatDisplayDate } from "../utils/format-date";
+import { ApiService } from "./api.service";
 
-/** Resposta paginada de listagens. */
-export interface ConversationPage {
-  items: Conversation[];
-  pagination: Pagination;
+/** DTO de listagem devolvido pelo backend (`ConversationRead`). */
+interface ConversationDto {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
 }
 
-export interface CreateConversationPayload {
-  title?: string;
-  agentId?: string;
-  projectId?: string;
+/** DTO de mensagem devolvido pelo backend (`MessageRead`). */
+interface MessageDto {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
 }
 
-const ENDPOINTS = {
-  list: "/conversations",
-  one: (id: string) => `/conversations/${id}`,
-} as const;
+/** Conversa completa com mensagens (`ConversationDetail`). */
+export interface ConversationDetail extends Conversation {
+  messages: ChatMessage[];
+}
 
 @Injectable({ providedIn: "root" })
 export class ConversationService {
   private readonly api = inject(ApiService);
 
-  /** Lista conversas com paginação. */
-  list(params?: { page?: number; pageSize?: number; query?: string }): Observable<ApiResponse<ConversationPage>> {
-    // return this.api.get<ApiResponse<ConversationPage>>(ENDPOINTS.list, params);
-    return notImplemented("ConversationService.list");
+  /** Lista as conversas persistidas, mais recentes primeiro. */
+  list(): Observable<Conversation[]> {
+    return this.api
+      .get<ConversationDto[]>("/conversations")
+      .pipe(map((dtos) => dtos.map((dto) => this.toConversation(dto))));
   }
 
-  /** Obtém uma conversa pelo id. */
-  get(id: string): Observable<ApiResponse<Conversation>> {
-    // return this.api.get<ApiResponse<Conversation>>(ENDPOINTS.one(id));
-    return notImplemented("ConversationService.get");
+  /** Obtém uma conversa com todas as mensagens ordenadas. */
+  get(id: string): Observable<ConversationDetail> {
+    return this.api
+      .get<ConversationDto & { messages: MessageDto[] }>(`/conversations/${id}`)
+      .pipe(
+        map((dto) => ({
+          ...this.toConversation(dto),
+          messages: (dto.messages ?? []).map(
+            (message): ChatMessage => ({
+              id: message.id,
+              role: message.role,
+              content: message.content,
+            }),
+          ),
+        })),
+      );
   }
 
-  /** Cria uma nova conversa. */
-  create(payload: CreateConversationPayload): Observable<ApiResponse<Conversation>> {
-    // return this.api.post<ApiResponse<Conversation>>(ENDPOINTS.list, payload);
-    return notImplemented("ConversationService.create");
+  /** Exclui uma conversa (e suas mensagens) no backend. */
+  remove(id: string): Observable<void> {
+    return this.api.delete<void>(`/conversations/${id}`);
   }
 
-  /** Renomeia uma conversa. */
-  rename(id: string, title: string): Observable<ApiResponse<Conversation>> {
-    // return this.api.patch<ApiResponse<Conversation>>(ENDPOINTS.one(id), { title });
-    return notImplemented("ConversationService.rename");
-  }
-
-  /** Exclui uma conversa. */
-  remove(id: string): Observable<ApiResponse<null>> {
-    // return this.api.delete<ApiResponse<null>>(ENDPOINTS.one(id));
-    return notImplemented("ConversationService.remove");
+  private toConversation(dto: ConversationDto): Conversation {
+    return {
+      id: dto.id,
+      title: dto.title,
+      messageCount: dto.message_count,
+      displayDate: formatDisplayDate(dto.created_at),
+    };
   }
 }

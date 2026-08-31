@@ -12,7 +12,6 @@ import type {
   Agent,
   AssistantActivity,
   AssistantTask,
-  Conversation,
   FileItem,
   Project,
   UserProfile,
@@ -57,41 +56,12 @@ export class ThemeService {
 }
 
 /* ============================================================
-   Conversas
+   Conversas — persistidas pelo backend FastAPI.
+   O acesso real vive em core/services/conversation.service.ts
+   (ConversationService); o chat em core/services/chat.service.ts.
    ============================================================ */
-const CONVERSATION_SEED: Conversation[] = [
-  { id: "c1", title: "Resumo do artigo sobre transformers", messageCount: 14, displayDate: "Hoje, 14:32" },
-  { id: "c2", title: "Roteiro do vídeo institucional", messageCount: 23, displayDate: "Hoje, 09:15" },
-  { id: "c3", title: "Análise do CSV de vendas de janeiro", messageCount: 8, displayDate: "Ontem, 18:47" },
-  { id: "c4", title: "Ideias de nomes para a marca", messageCount: 31, displayDate: "Ontem, 11:03" },
-  { id: "c5", title: "Tradução do whitepaper para inglês", messageCount: 6, displayDate: "3 fev, 16:20" },
-  { id: "c6", title: "Plano de estudos de machine learning", messageCount: 19, displayDate: "1 fev, 08:54" },
-  { id: "c7", title: "Refatoração do módulo de pagamentos", messageCount: 42, displayDate: "28 jan, 15:11" },
-];
-
-@Injectable({ providedIn: "root" })
-export class ConversationsService {
-  private items: Conversation[] = [...CONVERSATION_SEED];
-
-  list(): Observable<Conversation[]> {
-    return of([...this.items]).pipe(delay(650));
-  }
-
-  duplicate(id: string): void {
-    const source = this.items.find((item) => item.id === id);
-    if (!source) return;
-    this.items.unshift({
-      ...source,
-      id: `${source.id}-copy-${Date.now().toString(36)}`,
-      title: `${source.title} (cópia)`,
-      displayDate: "Agora",
-    });
-  }
-
-  remove(id: string): void {
-    this.items = this.items.filter((item) => item.id !== id);
-  }
-}
+export { ConversationService } from "./conversation.service";
+export { ChatService } from "./chat.service";
 
 /* ============================================================
    Agentes
