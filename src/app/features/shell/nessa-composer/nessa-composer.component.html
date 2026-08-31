@@ -20,6 +20,12 @@
   }
 
   <label class="composer__sr" for="nessa-message">Mensagem para a NESSA</label>
+  <!--
+    Campo não-controlado de propósito: o DOM é o dono da digitação e
+    NENHUMA binding de template escreve no valor — assim, mudanças de
+    estado externas (como o modelo selecionado) jamais apagam o texto.
+    O signal `text` apenas espelha o campo via (input).
+  -->
   <textarea
     #field
     id="nessa-message"
@@ -27,7 +33,6 @@
     rows="1"
     placeholder="Mensagem para a NESSA..."
     autocomplete="off"
-    [value]="text()"
     (input)="onInput($event)"
     (keydown.enter)="onEnter($event)"
     (focus)="focused.set(true)"
