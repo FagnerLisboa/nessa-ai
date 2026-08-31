@@ -2,9 +2,11 @@
 NESSA AI — Schemas do Chat (contratos de request/response)
 
 Espelham o contrato consumido pelo frontend Angular:
-  request : { "message": "Olá NESSA" }
-  response: { "response": "Olá! Como posso ajudar você hoje?" }
+  request : { "message": "Olá NESSA", "conversation_id": "<uuid?>" }
+  response: { "response": "...", "conversation_id": "<uuid>" }
 """
+
+from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -18,6 +20,12 @@ class ChatRequest(BaseModel):
         max_length=4000,
         description="Mensagem do usuário para a NESSA",
         examples=["Olá NESSA"],
+    )
+    conversation_id: UUID | None = Field(
+        default=None,
+        description=(
+            "Id de uma conversa existente. Se omitido, uma nova conversa é criada."
+        ),
     )
 
     @field_validator("message")
@@ -36,4 +44,8 @@ class ChatResponse(BaseModel):
         ...,
         description="Resposta da NESSA para a mensagem enviada",
         examples=["Olá! Como posso ajudar você hoje?"],
+    )
+    conversation_id: UUID = Field(
+        ...,
+        description="Conversa onde a troca foi persistida (nova ou existente)",
     )

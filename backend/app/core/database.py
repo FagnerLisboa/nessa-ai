@@ -5,8 +5,8 @@ O engine é criado de forma preguiçosa: importar este módulo NÃO
 abre conexão com o banco — o que permite que /health e /docs
 respondam mesmo antes do PostgreSQL estar disponível.
 
-Nesta etapa ainda não existem tabelas; `Base` é o ponto de
-registro dos modelos das próximas etapas (e do Alembic).
+`Base` é o ponto de registro dos modelos ORM (Conversation,
+Message, ...) usados pelo Alembic e pela suíte de testes.
 """
 
 from sqlalchemy import create_engine
