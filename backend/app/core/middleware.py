@@ -35,8 +35,9 @@ Comportamento:
   - Inválido → responde 400 com o envelope da NESSA.
   - Válido   → replica (replay) os bytes normalizados para a aplicação
                downstream, que os lê normalmente.
-  - Body vazio → passa direto (a semântica é do endpoint/FastAPI; um
-                 DELETE com Content-Type json sem corpo continua 204/404).
+  - Body vazio em POST/PUT/PATCH → 400 INVALID_JSON_BODY (não é JSON
+                 válido). DELETE é isento: chega comumente com Content-Type
+                 json e sem corpo e os endpoints DELETE ignoram o payload.
 
 É um middleware ASGI puro (não BaseHTTPMiddleware) para bufferizar e
 repetir o corpo com segurança, sem consumir o stream.
@@ -48,6 +49,11 @@ from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 _WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+# Métodos que exigem payload: body vazio com Content-Type json é rejeitado
+# com 400. DELETE fica de fora — ele é comumente enviado sem corpo e os
+# endpoints DELETE ignoram o payload (preserva o comportamento atual).
+_BODY_REQUIRED_METHODS = {"POST", "PUT", "PATCH"}
 
 # BOM UTF-8: EF BB BF em bytes; U+FEFF quando decodificado.
 _UTF8_BOM = b"\xef\xbb\xbf"
@@ -108,11 +114,18 @@ class JsonBodyGuardMiddleware:
             decoded = decoded[1:]
             body = body[len(_UTF8_BOM):]
 
+        # ---- Body vazio em métodos que exigem payload → 400 ----
+        # POST/PUT/PATCH com Content-Type json e corpo vazio — ou contendo
+        # apenas o BOM — não representam um JSON válido. Respondemos aqui,
+        # antes do FastAPI: ele trata corpo ausente como erro de validação
+        # (422), fora do envelope da NESSA. DELETE é isento (ver constante).
+        if problem is None and not body and method in _BODY_REQUIRED_METHODS:
+            problem = (
+                "O corpo da requisição está vazio. "
+                "Envie um JSON válido com Content-Type: application/json."
+            )
+
         # ---- Valida o JSON (somente se houver conteúdo) ----
-        # Body vazio NÃO é rejeitado aqui: a semântica pertence ao endpoint
-        # (ex.: DELETE com Content-Type json e sem corpo deve seguir 204/404;
-        # POST sem corpo chega ao FastAPI, que responde 400 pelo handler de
-        # main.py com o mesmo envelope INVALID_JSON_BODY).
         if problem is None and decoded:
             try:
                 json.loads(decoded)
