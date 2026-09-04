@@ -5,7 +5,8 @@ POST /api/v1/chat
 
 O endpoint é fino por design: validação de entrada via schema
 Pydantic, sessão do banco via dependência, lógica no ChatService
-e IA atrás da interface AIProvider (mock nesta etapa).
+e IA atrás da interface AIProvider (o motor ativo — mock ou gemini —
+é definido por settings.AI_PROVIDER, sem alterar este endpoint).
 """
 
 from functools import lru_cache
