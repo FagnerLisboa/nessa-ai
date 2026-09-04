@@ -25,11 +25,18 @@ Por que um middleware (e não um handler de exceção)?
 
 Comportamento:
   - Intercepta apenas requests com Content-Type application/json e método
-    de escrita (POST/PUT/PATCH/DELETE). Os demais passam direto.
+    de escrita (POST/PUT/PATCH/DELETE). Os demais passam direto — em
+    especial OPTIONS (preflight CORS), nunca tocado por este middleware.
   - Bufferiza o corpo, valida UTF-8 e, em seguida, o JSON.
+  - BOM UTF-8 (EF BB BF) é suportado: detectado no início do corpo,
+    removido antes da validação textual e do replay — o downstream
+    recebe JSON UTF-8 limpo, conforme a RFC 8259 (§8.1: implementações
+    NÃO DEVEM adicionar BOM; o conteúdo após o BOM é o JSON real).
   - Inválido → responde 400 com o envelope da NESSA.
-  - Válido   → replica (replay) os bytes bufferizados para a aplicação
+  - Válido   → replica (replay) os bytes normalizados para a aplicação
                downstream, que os lê normalmente.
+  - Body vazio → passa direto (a semântica é do endpoint/FastAPI; um
+                 DELETE com Content-Type json sem corpo continua 204/404).
 
 É um middleware ASGI puro (não BaseHTTPMiddleware) para bufferizar e
 repetir o corpo com segurança, sem consumir o stream.
@@ -41,6 +48,10 @@ from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 _WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+# BOM UTF-8: EF BB BF em bytes; U+FEFF quando decodificado.
+_UTF8_BOM = b"\xef\xbb\xbf"
+_BOM_CHAR = "\ufeff"
 
 
 class JsonBodyGuardMiddleware:
@@ -88,7 +99,20 @@ class JsonBodyGuardMiddleware:
                 "Envie com codificação UTF-8."
             )
 
+        # ---- Trata BOM UTF-8 (EF BB BF) ----
+        # json.loads() sobre str rejeita U+FEFF inicial mesmo quando o JSON é
+        # válido; já sobre bytes o Python o aceita. Para ser independente do
+        # caminho, removemos o BOM aqui: a validação incide sobre o JSON real
+        # e o downstream recebe bytes limpos.
+        if problem is None and decoded is not None and decoded.startswith(_BOM_CHAR):
+            decoded = decoded[1:]
+            body = body[len(_UTF8_BOM):]
+
         # ---- Valida o JSON (somente se houver conteúdo) ----
+        # Body vazio NÃO é rejeitado aqui: a semântica pertence ao endpoint
+        # (ex.: DELETE com Content-Type json e sem corpo deve seguir 204/404;
+        # POST sem corpo chega ao FastAPI, que responde 400 pelo handler de
+        # main.py com o mesmo envelope INVALID_JSON_BODY).
         if problem is None and decoded:
             try:
                 json.loads(decoded)
@@ -106,8 +130,16 @@ class JsonBodyGuardMiddleware:
             await response(scope, receive, send)
             return
 
-        # ---- Corpo válido: replica os bytes para o downstream ----
+        # ---- Corpo válido: replica os bytes normalizados para o downstream ----
+        # Entrega one-shot: a primeira leitura recebe o corpo completo;
+        # leituras subsequentes recebem vazio (more_body=False), evitando
+        # re-entrega caso algo leia o stream mais de uma vez sem cache.
+        state = {"sent": False}
+
         async def replay_receive() -> Message:
+            if state["sent"]:
+                return {"type": "http.request", "body": b"", "more_body": False}
+            state["sent"] = True
             return {"type": "http.request", "body": body, "more_body": False}
 
         await self.app(scope, replay_receive, send)
