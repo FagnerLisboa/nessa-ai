@@ -18,6 +18,8 @@ Mais as regressões:
   - BOM + acentos                                → 200
 """
 
+import uuid
+
 CHAT_URL = "/api/v1/chat"
 JSON_HEADERS = {"Content-Type": "application/json"}
 EXPECTED_REPLY = "Olá! Como posso ajudar você hoje?"
@@ -111,6 +113,27 @@ def test_empty_json_body_returns_400(client):
 
     assert response.status_code == 400
     assert response.json()["code"] == "INVALID_JSON_BODY"
+
+
+def test_bom_only_body_returns_400(client):
+    # Um corpo contendo APENAS o BOM equivale a vazio após a normalização.
+    response = client.post(CHAT_URL, content=b"\xef\xbb\xbf", headers=JSON_HEADERS)
+
+    assert response.status_code == 400
+    assert response.json()["code"] == "INVALID_JSON_BODY"
+
+
+def test_delete_with_json_content_type_and_empty_body_still_works(client):
+    # DELETE é isento da regra de body vazio: ele chega comumente com
+    # Content-Type json e sem corpo. Deve seguir o fluxo normal — aqui,
+    # 404 (conversa inexistente) — e NÃO um 400 do guarda.
+    response = client.delete(
+        f"/api/v1/conversations/{uuid.uuid4()}",
+        headers=JSON_HEADERS,
+    )
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "CONVERSATION_NOT_FOUND"
 
 
 # ------------------------------------------------------------
