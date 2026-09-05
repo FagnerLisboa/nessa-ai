@@ -14,6 +14,10 @@ pydantic-settings==2.7.0
 # Carregamento do arquivo .env (usado pelo pydantic-settings)
 python-dotenv==1.0.1
 
+# Google Gen AI SDK oficial (Gemini). O próprio Google recomenda
+# pinar < 3.0.0 (mudanças previstas de Function Calling na v3).
+google-genai>=1.0,<3.0
+
 # Testes (pytest + cliente HTTP do FastAPI TestClient)
 pytest==8.3.4
 httpx==0.28.1

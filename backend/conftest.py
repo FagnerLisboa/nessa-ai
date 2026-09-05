@@ -9,6 +9,15 @@ sobrescrevendo a dependência `get_db` — o PostgreSQL real é
 usado apenas em produção/development via DATABASE_URL.
 """
 
+import os
+
+# A suíte é hermeticamente mockada: força o provider padrão ANTES de
+# importar app.main (que constrói Settings no import). Variável de
+# ambiente real tem precedência sobre o arquivo .env no pydantic-settings,
+# então mesmo um .env local com AI_PROVIDER=gemini não faz os testes
+# chamarem a API real do Gemini (evita latência e cobrança).
+os.environ["AI_PROVIDER"] = "mock"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

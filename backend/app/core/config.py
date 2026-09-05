@@ -35,6 +35,18 @@ class Settings(BaseSettings):
     # ---- CORS (origens separadas por vírgula) ----
     CORS_ORIGINS: str = "http://localhost:4200"
 
+    # ---- Motor de IA do chat ----
+    # "mock" (padrão — sem chamadas externas) ou "gemini".
+    # A chave do provedor vive EXCLUSIVAMENTE aqui, no backend.
+    AI_PROVIDER: str = "mock"
+
+    # Chave do Google Gemini (https://aistudio.google.com/apikey).
+    # Nunca preencher em arquivo versionado; somente no .env local.
+    GEMINI_API_KEY: str = ""
+
+    # Modelo Gemini utilizado no chat (estável e indicado para conversa).
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+
     # ---- Provedores de IA (placeholders vazios nesta etapa) ----
     OPENAI_API_KEY: str = ""
     GOOGLE_API_KEY: str = ""
