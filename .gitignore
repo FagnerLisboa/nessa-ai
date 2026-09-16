@@ -1,5 +1,24 @@
+```
+# Angular cache
+.angular/cache/
+
+# Compiled and build artifacts
+*.tsbuildinfo
+angular-compiler.db-lock
+
+# Dependencies
 node_modules/
-.next/
-dist/
-build/
+
+# Logs and temp files
 *.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+```

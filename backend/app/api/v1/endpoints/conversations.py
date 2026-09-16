@@ -3,6 +3,7 @@ NESSA AI — Endpoints de Conversas
 
 GET    /api/v1/conversations              → lista conversas
 GET    /api/v1/conversations/{id}         → conversa com mensagens
+POST   /api/v1/conversations              → cria nova conversa
 DELETE /api/v1/conversations/{id}         → exclui conversa (e mensagens)
 """
 
@@ -31,6 +32,30 @@ def _not_found(conversation_id: UUID) -> JSONResponse:
             "message": f"Conversa {conversation_id} não encontrada.",
             "status": 404,
         },
+    )
+
+
+@router.post(
+    "",
+    response_model=ConversationRead,
+    status_code=201,
+    summary="Criar nova conversa",
+)
+def create_conversation(
+    title: str,
+    db: Session = Depends(get_db),
+) -> ConversationRead:
+    """Cria uma nova conversa vazia com o título informado."""
+    service = ConversationService(db)
+    conversation = service.create(title=title)
+    db.commit()
+    db.refresh(conversation)
+    return ConversationRead(
+        id=conversation.id,
+        title=conversation.title,
+        created_at=conversation.created_at,
+        updated_at=conversation.updated_at,
+        message_count=0,
     )
 
 
