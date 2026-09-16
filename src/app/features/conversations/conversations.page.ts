@@ -70,8 +70,10 @@ export class ConversationsPage {
       .subscribe({
         next: (detail) => {
           this.appState.setConversation(detail);
-          // Navega para a home onde o chat está disponível
-          void this.router.navigate(["/"]);
+          // Navega para a home passando o ID da conversa como query param
+          void this.router.navigate(["/"], {
+            queryParams: { id: conversation.id }
+          });
         },
         error: () => {
           // Mantém na página de conversas em caso de erro
