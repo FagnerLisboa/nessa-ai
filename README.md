@@ -125,3 +125,7 @@ nessa-ai/
 ├── angular.json
 ├── package.json
 └── README.md
+
+## TESTE 3
+
+Teste de integração Git — NESSA AI.
