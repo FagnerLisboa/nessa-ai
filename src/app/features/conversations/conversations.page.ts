@@ -1,8 +1,10 @@
 import { Component, computed, DestroyRef, inject, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Router, ActivatedRoute } from "@angular/router";
 
 import type { Conversation } from "../../../core/models";
 import { ConversationService } from "../../../core/services";
+import { AppState } from "../../../core/state/app.state";
 import { ActionMenuComponent, type MenuAction } from "../../shared/components/action-menu.component";
 import { PageHeaderComponent } from "../../shared/components/page-header.component";
 import { SearchBoxComponent } from "../../shared/components/search-box.component";
@@ -17,6 +19,9 @@ import { StateViewComponent } from "../../shared/components/state-view.component
 })
 export class ConversationsPage {
   private readonly service = inject(ConversationService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly appState = inject(AppState);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly status = signal<"loading" | "ready" | "error">("loading");
@@ -46,8 +51,51 @@ export class ConversationsPage {
       .remove(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.load(),
+        next: () => {
+          this.load();
+          // Se a conversa excluída for a atual, limpa o estado
+          if (this.appState.currentConversation()?.id === id) {
+            this.appState.setConversation(null);
+          }
+        },
         error: () => this.load(),
+      });
+  }
+
+  /** Seleciona uma conversa para visualização/chat. */
+  protected selectConversation(conversation: Conversation): void {
+    this.service
+      .get(conversation.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (detail) => {
+          this.appState.setConversation(detail);
+          // Navega para a home onde o chat está disponível
+          void this.router.navigate(["/"]);
+        },
+        error: () => {
+          // Mantém na página de conversas em caso de erro
+        },
+      });
+  }
+
+  /** Cria uma nova conversa vazia. */
+  protected newConversation(): void {
+    const title = `Nova conversa ${new Date().toLocaleDateString("pt-BR")}`;
+    this.service
+      .create(title)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (conversation) => {
+          this.appState.setConversation({
+            ...conversation,
+            messages: [],
+          });
+          void this.router.navigate(["/"]);
+        },
+        error: () => {
+          // Permanece na página em caso de erro
+        },
       });
   }
 

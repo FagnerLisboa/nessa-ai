@@ -30,6 +30,11 @@ interface MessageDto {
   created_at: string;
 }
 
+/** Payload enviado ao backend para criar conversa. */
+interface CreateConversationPayload {
+  title: string;
+}
+
 /** Conversa completa com mensagens (`ConversationDetail`). */
 export interface ConversationDetail extends Conversation {
   messages: ChatMessage[];
@@ -62,6 +67,14 @@ export class ConversationService {
           ),
         })),
       );
+  }
+
+  /** Cria uma nova conversa vazia com o título informado. */
+  create(title: string): Observable<Conversation> {
+    const params = new URLSearchParams({ title });
+    return this.api
+      .post<ConversationDto>(`/conversations?${params.toString()}`)
+      .pipe(map((dto) => this.toConversation(dto)));
   }
 
   /** Exclui uma conversa (e suas mensagens) no backend. */
