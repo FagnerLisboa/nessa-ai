@@ -1,5 +1,8 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 
+import { ConversationService, type ConversationDetail } from "../../../core/services";
+import { AppState } from "../../../core/state/app.state";
 import { NessaLogoComponent } from "../../shared/components/nessa-logo/nessa-logo.component";
 import { NessaComposerComponent } from "../shell/nessa-composer/nessa-composer.component";
 import { SuggestionsComponent } from "../shell/suggestions/suggestions.component";
@@ -127,10 +130,35 @@ import { SuggestionsComponent } from "../shell/suggestions/suggestions.component
     }
   `,
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly conversationService = inject(ConversationService);
+  private readonly appState = inject(AppState);
+
   /** Texto repassado ao composer quando uma sugestão é escolhida. */
   protected readonly seed = signal("");
   protected readonly seedTick = signal(0);
+
+  ngOnInit(): void {
+    // Lê o query param 'id' para carregar conversa existente do histórico
+    this.route.queryParams.subscribe(params => {
+      const conversationId = params['id'];
+      if (conversationId) {
+        this.conversationService.get(conversationId).subscribe({
+          next: (detail: ConversationDetail) => {
+            this.appState.setConversation(detail);
+          },
+          error: () => {
+            // Se falhar ao carregar, limpa a conversa atual
+            this.appState.setConversation(null);
+          }
+        });
+      } else {
+        // Sem ID: mantém como nova conversa (estado já é null por padrão)
+        this.appState.setConversation(null);
+      }
+    });
+  }
 
   protected onSuggestion(text: string): void {
     this.seed.set(text);

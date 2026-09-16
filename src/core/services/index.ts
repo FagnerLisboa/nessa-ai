@@ -60,7 +60,10 @@ export class ThemeService {
    O acesso real vive em core/services/conversation.service.ts
    (ConversationService); o chat em core/services/chat.service.ts.
    ============================================================ */
-export { ConversationService } from "./conversation.service";
+export {
+  ConversationService,
+  type ConversationDetail,
+} from "./conversation.service";
 export { ChatService } from "./chat.service";
 
 /* ============================================================
@@ -187,14 +190,70 @@ export class ProjectsService {
    Arquivos
    ============================================================ */
 const FILE_SEED: FileItem[] = [
-  { id: "f1", name: "relatorio-vendas-janeiro", kind: "pdf", sizeLabel: "2,4 MB", displayDate: "Hoje, 10:22", status: "pronto" },
-  { id: "f2", name: "whitepaper-transformers", kind: "docx", sizeLabel: "812 KB", displayDate: "Hoje, 09:03", status: "pronto" },
-  { id: "f3", name: "notas-reuniao-kickoff", kind: "txt", sizeLabel: "14 KB", displayDate: "Ontem, 17:48", status: "pronto" },
-  { id: "f4", name: "leads-2026", kind: "csv", sizeLabel: "1,1 MB", displayDate: "Ontem, 14:31", status: "pronto" },
-  { id: "f5", name: "orcamentos-trimestre", kind: "xlsx", sizeLabel: "640 KB", displayDate: "3 fev, 11:19", status: "pronto" },
-  { id: "f6", name: "capa-site-v2", kind: "png", sizeLabel: "3,8 MB", displayDate: "2 fev, 16:44", status: "pronto" },
-  { id: "f7", name: "retrato-fundadora", kind: "jpg", sizeLabel: "2,1 MB", displayDate: "1 fev, 12:08", status: "pronto" },
-  { id: "f8", name: "banner-lancamento", kind: "webp", sizeLabel: "920 KB", displayDate: "28 jan, 09:37", status: "pronto" },
+  {
+    id: "f1",
+    name: "relatorio-vendas-janeiro",
+    kind: "pdf",
+    sizeLabel: "2,4 MB",
+    displayDate: "Hoje, 10:22",
+    status: "pronto",
+  },
+  {
+    id: "f2",
+    name: "whitepaper-transformers",
+    kind: "docx",
+    sizeLabel: "812 KB",
+    displayDate: "Hoje, 09:03",
+    status: "pronto",
+  },
+  {
+    id: "f3",
+    name: "notas-reuniao-kickoff",
+    kind: "txt",
+    sizeLabel: "14 KB",
+    displayDate: "Ontem, 17:48",
+    status: "pronto",
+  },
+  {
+    id: "f4",
+    name: "leads-2026",
+    kind: "csv",
+    sizeLabel: "1,1 MB",
+    displayDate: "Ontem, 14:31",
+    status: "pronto",
+  },
+  {
+    id: "f5",
+    name: "orcamentos-trimestre",
+    kind: "xlsx",
+    sizeLabel: "640 KB",
+    displayDate: "3 fev, 11:19",
+    status: "pronto",
+  },
+  {
+    id: "f6",
+    name: "capa-site-v2",
+    kind: "png",
+    sizeLabel: "3,8 MB",
+    displayDate: "2 fev, 16:44",
+    status: "pronto",
+  },
+  {
+    id: "f7",
+    name: "retrato-fundadora",
+    kind: "jpg",
+    sizeLabel: "2,1 MB",
+    displayDate: "1 fev, 12:08",
+    status: "pronto",
+  },
+  {
+    id: "f8",
+    name: "banner-lancamento",
+    kind: "webp",
+    sizeLabel: "920 KB",
+    displayDate: "28 jan, 09:37",
+    status: "pronto",
+  },
 ];
 
 @Injectable({ providedIn: "root" })
@@ -220,7 +279,9 @@ export class FilesService {
   }
 
   markReady(id: string): void {
-    this.items = this.items.map((item) => (item.id === id ? { ...item, status: "pronto" } : item));
+    this.items = this.items.map((item) =>
+      item.id === id ? { ...item, status: "pronto" } : item,
+    );
   }
 
   remove(id: string): void {
@@ -234,25 +295,44 @@ export class FilesService {
 @Injectable({ providedIn: "root" })
 export class AssistantService {
   readonly tasks = signal<AssistantTask[]>([
-    { id: "t1", label: "Revisar o resumo do artigo de transformers", done: true },
+    {
+      id: "t1",
+      label: "Revisar o resumo do artigo de transformers",
+      done: true,
+    },
     { id: "t2", label: "Enviar roteiro do vídeo para aprovação", done: false },
-    { id: "t3", label: "Consolidar métricas da semana em um relatório", done: false },
+    {
+      id: "t3",
+      label: "Consolidar métricas da semana em um relatório",
+      done: false,
+    },
     { id: "t4", label: "Agendar revisão do plano de estudos", done: true },
   ]);
 
   readonly activities = signal<AssistantActivity[]>([
     { id: "v1", label: "Resumo do artigo concluído", timeLabel: "há 26 min" },
     { id: "v2", label: "Roteiro do vídeo atualizado", timeLabel: "há 2 h" },
-    { id: "v3", label: "Análise do CSV de vendas finalizada", timeLabel: "ontem" },
+    {
+      id: "v3",
+      label: "Análise do CSV de vendas finalizada",
+      timeLabel: "ontem",
+    },
     { id: "v4", label: "Plano de estudos revisado", timeLabel: "ontem" },
   ]);
 
   toggleTask(id: string): void {
-    this.tasks.update((tasks) => tasks.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+    this.tasks.update((tasks) =>
+      tasks.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task,
+      ),
+    );
   }
 
   addTask(label: string): void {
-    this.tasks.update((tasks) => [...tasks, { id: `t-${Date.now().toString(36)}`, label, done: false }]);
+    this.tasks.update((tasks) => [
+      ...tasks,
+      { id: `t-${Date.now().toString(36)}`, label, done: false },
+    ]);
   }
 }
 
@@ -284,7 +364,11 @@ export class ProfileService {
   private read(): UserProfile {
     try {
       const raw = localStorage.getItem(PROFILE_KEY);
-      if (raw) return { ...PROFILE_DEFAULT, ...(JSON.parse(raw) as Partial<UserProfile>) };
+      if (raw)
+        return {
+          ...PROFILE_DEFAULT,
+          ...(JSON.parse(raw) as Partial<UserProfile>),
+        };
     } catch {
       /* noop */
     }
@@ -297,12 +381,27 @@ export class ProfileService {
    ============================================================ */
 const PROVIDER_SEED: AIProvider[] = [
   { id: "openai", name: "OpenAI", model: "GPT-4o", status: "nao_configurado" },
-  { id: "gemini", name: "Google Gemini", model: "Gemini 2.5 Pro", status: "nao_configurado" },
-  { id: "claude", name: "Anthropic Claude", model: "Claude Sonnet 4", status: "nao_configurado" },
+  {
+    id: "gemini",
+    name: "Google Gemini",
+    model: "Gemini 2.5 Pro",
+    status: "nao_configurado",
+  },
+  {
+    id: "claude",
+    name: "Anthropic Claude",
+    model: "Claude Sonnet 4",
+    status: "nao_configurado",
+  },
   { id: "qwen", name: "Qwen", model: "Qwen3-Max", status: "nao_configurado" },
   { id: "kimi", name: "Kimi", model: "Kimi K2", status: "nao_configurado" },
   { id: "grok", name: "Grok", model: "Grok 4", status: "nao_configurado" },
-  { id: "deepseek", name: "DeepSeek", model: "DeepSeek V3", status: "nao_configurado" },
+  {
+    id: "deepseek",
+    name: "DeepSeek",
+    model: "DeepSeek V3",
+    status: "nao_configurado",
+  },
 ];
 
 @Injectable({ providedIn: "root" })
