@@ -110,7 +110,10 @@ class GeminiProvider(AIProvider):
 
             self._client = genai.Client(
                 api_key=self._api_key,
-                http_options=types.HttpOptions(timeout=_GEMINI_TIMEOUT_MS),
+                http_options=types.HttpOptions(
+                    timeout=_GEMINI_TIMEOUT_MS,
+                    api_version="v1",
+                ),
             )
         return self._client
 
