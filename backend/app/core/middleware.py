@@ -72,6 +72,13 @@ class JsonBodyGuardMiddleware:
             return
 
         method = scope.get("method", "").upper()
+        
+        # Requisições OPTIONS (CORS preflight) devem passar imediatamente
+        # sem validação de corpo JSON, pois vêm com corpo vazio.
+        if method == "OPTIONS":
+            await self.app(scope, receive, send)
+            return
+
         headers = {
             key.decode("latin-1").lower(): value.decode("latin-1")
             for key, value in scope.get("headers", [])
