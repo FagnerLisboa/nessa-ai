@@ -59,7 +59,7 @@ def _api_error_classes() -> tuple[type[BaseException], ...]:
     try:
         from google.genai import errors as genai_errors
 
-        return (genai_errors.APIError,)
+        return (genai_errors.APIError, genai_errors.ClientError)
     except ImportError:  # SDK não instalado — path genérico cobre
         return ()
 
