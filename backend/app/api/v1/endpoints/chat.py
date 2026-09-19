@@ -3,10 +3,11 @@ NESSA AI — Endpoint de Chat
 
 POST /api/v1/chat
 
-O endpoint é fino por design: validação de entrada via schema
-Pydantic, sessão do banco via dependência, lógica no ChatService
-e IA atrás da interface AIProvider (o motor ativo — mock ou gemini —
-é definido por settings.AI_PROVIDER, sem alterar este endpoint).
+O endpoint permanece fino por design:
+- validação de entrada via Pydantic;
+- sessão do banco via dependência;
+- lógica de negócio no ChatService;
+- seleção do provedor feita pela camada de serviços.
 """
 
 from functools import lru_cache
@@ -20,12 +21,17 @@ from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.chat_service import ChatService, ChatServiceError
 from app.services.conversation_service import ConversationNotFoundError
 
-router = APIRouter(prefix="/chat", tags=["chat"])
+
+router = APIRouter(
+    prefix="/chat",
+    tags=["chat"],
+)
 
 
 @lru_cache
 def get_chat_service() -> ChatService:
-    """Instância única do serviço (injetável nos testes)."""
+    """Instância única do serviço, injetável nos testes."""
+
     return ChatService()
 
 
@@ -35,9 +41,15 @@ def get_chat_service() -> ChatService:
     status_code=200,
     summary="Conversar com a NESSA",
     responses={
-        404: {"description": "Conversa informada não encontrada"},
-        422: {"description": "Mensagem inválida ou vazia"},
-        502: {"description": "Falha no provedor de IA"},
+        404: {
+            "description": "Conversa informada não encontrada",
+        },
+        422: {
+            "description": "Mensagem ou modelo inválido",
+        },
+        502: {
+            "description": "Falha no provedor de IA",
+        },
     },
 )
 async def chat(
@@ -45,13 +57,16 @@ async def chat(
     db: Session = Depends(get_db),
     service: ChatService = Depends(get_chat_service),
 ) -> ChatResponse:
-    """Recebe a mensagem do usuário e retorna a resposta da NESSA."""
+    """Recebe a mensagem e encaminha para o modelo selecionado."""
+
     try:
         return await service.reply(
             payload.message,
             db=db,
             conversation_id=payload.conversation_id,
+            model=payload.model,
         )
+
     except ConversationNotFoundError as exc:
         return JSONResponse(
             status_code=404,
@@ -61,8 +76,13 @@ async def chat(
                 "status": 404,
             },
         )
+
     except ChatServiceError as exc:
         return JSONResponse(
             status_code=502,
-            content={"code": "CHAT_PROVIDER_ERROR", "message": str(exc), "status": 502},
+            content={
+                "code": "CHAT_PROVIDER_ERROR",
+                "message": str(exc),
+                "status": 502,
+            },
         )

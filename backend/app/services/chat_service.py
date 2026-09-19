@@ -1,16 +1,17 @@
 """
 NESSA AI — ChatService
 
-Regras de negócio do chat: validação de domínio, persistência da
-troca (conversa + mensagens) e consulta ao provedor de IA.
+Regras de negócio do chat:
+- validação da mensagem;
+- persistência da conversa;
+- seleção do provedor de IA;
+- geração da resposta;
+- persistência da resposta.
 
-Fluxo:
-  1. valida a mensagem;
-  2. resolve a conversa (cria uma nova se não houver id);
-  3. salva a mensagem do usuário;
-  4. gera a resposta via AIProvider;
-  5. salva a resposta da NESSA;
-  6. confirma a transação e devolve os dados ao frontend.
+O frontend pode selecionar:
+    - nessa
+    - qwen
+    - gemini
 """
 
 from uuid import UUID
@@ -33,48 +34,73 @@ class ChatService:
     """Orquestra a conversa entre o usuário e o provedor de IA."""
 
     def __init__(self, provider: AIProvider | None = None) -> None:
-        self._provider = provider or get_ai_provider()
+        self._provider = provider
 
     async def reply(
         self,
         message: str,
         db: Session,
         conversation_id: UUID | None = None,
+        model: str = "nessa",
     ) -> ChatResponse:
-        """Gera a resposta da NESSA persistindo a troca completa."""
+        """Gera a resposta persistindo a troca completa."""
+
         text = message.strip()
+
         if not text:
             raise ChatServiceError("A mensagem não pode ser vazia.")
 
         conversations = ConversationService(db)
 
-        # 2. Resolve a conversa: cria uma nova quando não há id.
+        # Resolve a conversa.
         if conversation_id is None:
             conversation = conversations.create(title=text)
         else:
             conversation = conversations.get(conversation_id)
+
             if conversation is None:
                 raise ConversationNotFoundError(conversation_id)
 
         try:
-            # 3. Salva a mensagem do usuário.
-            conversations.add_message(conversation.id, role="user", content=text)
+            # Salva a mensagem do usuário.
+            conversations.add_message(
+                conversation.id,
+                role="user",
+                content=text,
+            )
 
-            # 4. Gera a resposta através do AIProvider.
-            result = await self._provider.complete(text)
+            # Seleciona o provider.
+            provider = self._provider or get_ai_provider(model)
+
+            # Gera a resposta.
+            result = await provider.complete(text)
+
             if not result.text.strip():
-                raise ChatServiceError("O provedor de IA retornou uma resposta vazia.")
+                raise ChatServiceError(
+                    "O provedor de IA retornou uma resposta vazia."
+                )
 
-            # 5. Salva a resposta da NESSA.
-            conversations.add_message(conversation.id, role="assistant", content=result.text)
+            # Salva a resposta da IA.
+            conversations.add_message(
+                conversation.id,
+                role="assistant",
+                content=result.text,
+            )
 
-            # 6. Confirma a transação (conversa + 2 mensagens).
+            # Confirma a transação.
             db.commit()
+
         except ChatServiceError:
             db.rollback()
             raise
-        except Exception as exc:  # falha do provedor/banco → erro de domínio explícito
-            db.rollback()
-            raise ChatServiceError("Falha ao processar a conversa.") from exc
 
-        return ChatResponse(response=result.text, conversation_id=conversation.id)
+        except Exception as exc:
+            db.rollback()
+            raise ChatServiceError(
+                "Falha ao processar a conversa."
+            ) from exc
+
+        return ChatResponse(
+            response=result.text,
+            conversation_id=conversation.id,
+        )
