@@ -1,24 +1,8 @@
 """
-NESSA AI — Provider Gemini (google-genai SDK oficial)
+NESSA AI — Provider Gemini
 
-Implementa a interface `AIProvider` — o ChatService e o endpoint
-permanecem inalterados; a troca de motor é feita em
-`get_ai_provider()` via settings.AI_PROVIDER.
-
-SDK: google-genai (Google Gen AI SDK oficial, sucessor do
-google-generativeai). Uso assíncrono validado na documentação:
-    response = await client.aio.models.generate_content(model=..., contents=...)
-    response.text
-
-Segurança:
-  - A chave vem EXCLUSIVAMENTE de variável de ambiente
-    (GEMINI_API_KEY, com fallback GOOGLE_API_KEY) — nunca do código
-    ou do frontend.
-  - Nenhum log ou mensagem de erro contém a chave ou stack trace;
-    as exceções do SDK são convertidas em mensagens controladas.
-  - O import do SDK é tardio (somente quando o client real é
-    construído), permitindo importar este módulo e rodar a suíte
-    com um client injetado mesmo sem o google-genai instalado.
+Integração com a API oficial do Google Gemini
+usando a Interactions API.
 """
 
 from typing import Any
@@ -26,7 +10,6 @@ from typing import Any
 from app.core.config import get_settings
 from app.services.ai.provider import AIProvider, ProviderResult
 
-# Timeout das chamadas à API do Gemini, em milissegundos.
 _GEMINI_TIMEOUT_MS = 30_000
 
 
@@ -35,7 +18,7 @@ class GeminiError(RuntimeError):
 
 
 class GeminiConfigError(GeminiError):
-    """Configuração ausente ou inválida (ex.: GEMINI_API_KEY vazia)."""
+    """Configuração ausente ou inválida."""
 
 
 class GeminiProviderError(GeminiError):
@@ -43,41 +26,36 @@ class GeminiProviderError(GeminiError):
 
 
 def _timeout_classes() -> tuple[type[BaseException], ...]:
-    """Classes de timeout: do SDK (httpx) + TimeoutError do Python."""
     classes: list[type[BaseException]] = [TimeoutError]
+
     try:
         import httpx
 
         classes.append(httpx.TimeoutException)
-    except ImportError:  # pragma: no cover - httpx acompanha o SDK
+    except ImportError:
         pass
+
     return tuple(classes)
 
 
 def _api_error_classes() -> tuple[type[BaseException], ...]:
-    """Classe de erro da API do SDK (import tolerante a ausência)."""
     try:
         from google.genai import errors as genai_errors
 
-        return (genai_errors.APIError, genai_errors.ClientError)
-    except ImportError:  # SDK não instalado — path genérico cobre
+        return (
+            genai_errors.APIError,
+            genai_errors.ClientError,
+        )
+    except ImportError:
         return ()
 
 
-def _categorize_api_error(exc: BaseException) -> str:
-    """Mensagem controlada por categoria — sem detalhes internos."""
-    code = getattr(exc, "code", None)
-    if code in (401, 403):
-        return "Falha de autenticação com o Gemini. Verifique a GEMINI_API_KEY no backend."
-    if code == 429:
-        return "Limite de requisições do Gemini atingido. Tente novamente em instantes."
-    if code == 404:
-        return "Modelo do Gemini indisponível. Verifique a variável GEMINI_MODEL."
-    return "Erro na API do Gemini. Tente novamente."
-
-
 class GeminiProvider(AIProvider):
-    """Integração com o Google Gemini via SDK oficial google-genai."""
+    """
+    Provider do Gemini para o NESSA AI.
+
+    Utiliza a Interactions API do Google.
+    """
 
     name = "gemini"
 
@@ -88,23 +66,26 @@ class GeminiProvider(AIProvider):
         client: Any = None,
     ) -> None:
         settings = get_settings()
-        # A chave vive somente no backend (env). Fallback para
-        # GOOGLE_API_KEY espelha o comportamento do próprio SDK.
-        self._api_key = api_key if api_key is not None else (
-            settings.GEMINI_API_KEY or settings.GOOGLE_API_KEY
+
+        self._api_key = (
+            api_key
+            if api_key is not None
+            else (
+                settings.GEMINI_API_KEY
+                or settings.GOOGLE_API_KEY
+            )
         )
+
         self._model = model or settings.GEMINI_MODEL
-        # `client` injetado (testes) ou construído sob demanda (produção).
         self._client = client
 
     def _get_client(self) -> Any:
         if self._client is None:
             if not self._api_key:
                 raise GeminiConfigError(
-                    "GEMINI_API_KEY não configurada. "
-                    "Defina a variável de ambiente no backend (.env)."
+                    "GEMINI_API_KEY não configurada."
                 )
-            # Import tardio do SDK — ver docstring do módulo.
+
             from google import genai
             from google.genai import types
 
@@ -112,37 +93,96 @@ class GeminiProvider(AIProvider):
                 api_key=self._api_key,
                 http_options=types.HttpOptions(
                     timeout=_GEMINI_TIMEOUT_MS,
-                    api_version="v1",
                 ),
             )
+
         return self._client
 
     async def complete(self, prompt: str) -> ProviderResult:
-        """Envia o prompt ao Gemini e devolve somente o texto gerado."""
+        """
+        Envia o prompt para o Gemini e retorna somente o texto.
+        """
+
         client = self._get_client()
 
         try:
-            response = await client.aio.models.generate_content(
+            interaction = await client.aio.interactions.create(
                 model=self._model,
-                contents=prompt,
+                input=prompt,
             )
+
         except _timeout_classes():
             raise GeminiProviderError(
-                "Tempo de resposta do Gemini excedido. Tente novamente."
+                "Tempo de resposta do Gemini excedido. "
+                "Tente novamente."
             ) from None
+
         except _api_error_classes() as exc:
-            # Auth (401/403), quota (429), modelo inválido (404), 5xx...
-            raise GeminiProviderError(_categorize_api_error(exc)) from None
-        except Exception:
-            # Qualquer falha inesperada vira erro controlado —
-            # nem stack trace nem dados internos chegam ao frontend.
+            code = getattr(exc, "code", None)
+            message = getattr(
+                exc,
+                "message",
+                str(exc),
+            )
+
+            print("\n========== GEMINI API ERROR ==========")
+            print(f"Tipo: {type(exc).__name__}")
+            print(f"Código: {code}")
+            print(f"Mensagem: {message}")
+            print("======================================\n")
+
+            if code in (401, 403):
+                raise GeminiProviderError(
+                    "Falha de autenticação com o Gemini. "
+                    "Verifique a GEMINI_API_KEY."
+                ) from None
+
+            if code == 404:
+                raise GeminiProviderError(
+                    "Modelo do Gemini indisponível. "
+                    "Verifique a GEMINI_MODEL."
+                ) from None
+
+            if code == 429:
+                raise GeminiProviderError(
+                    "Limite de requisições do Gemini atingido. "
+                    "Tente novamente em instantes."
+                ) from None
+
+            raise GeminiProviderError(
+                "Erro na API do Gemini. "
+                "Tente novamente."
+            ) from None
+
+        except Exception as exc:
+            print("\n========== GEMINI UNEXPECTED ERROR ==========")
+            print(f"Tipo: {type(exc).__name__}")
+            print(f"Mensagem: {exc}")
+            print("=============================================\n")
+
             raise GeminiProviderError(
                 "Erro inesperado ao consultar o Gemini."
             ) from None
 
-        text = getattr(response, "text", None)
-        text = text.strip() if isinstance(text, str) else ""
-        if not text:
-            raise GeminiProviderError("O Gemini retornou uma resposta vazia.")
+        text = getattr(
+            interaction,
+            "output_text",
+            None,
+        )
 
-        return ProviderResult(text=text, provider=self.name, model=self._model)
+        text = (
+            text.strip()
+            if isinstance(text, str)
+            else ""
+        )
+
+        if not text:
+            raise GeminiProviderError(
+                "O Gemini retornou uma resposta vazia."
+            )
+
+        return ProviderResult(
+            text=text,
+            provider=self.name,
+            model=self._model,
+        )
