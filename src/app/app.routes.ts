@@ -13,6 +13,7 @@ import { SettingsPage } from "./features/settings/settings.page";
 import { ShellComponent } from "./features/shell/shell.component";
 import { VideosPage } from "./features/videos/videos.page";
 import { VoicePage } from "./features/voice/voice.page";
+import { RegisterPage } from "./features/auth/register.page";
 
 export const routes: Routes = [
   {
@@ -33,5 +34,10 @@ export const routes: Routes = [
       { path: "profile", component: ProfilePage },
       { path: "**", redirectTo: "" },
     ],
+  },
+  {
+    path: "cadastro",
+    component: RegisterPage,
+    title: "Criar Conta - NESSA AI",
   },
 ];
