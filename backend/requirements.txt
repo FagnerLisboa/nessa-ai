@@ -48,11 +48,4 @@ google-genai>=1.0,<3.0
 # ------------------------------------------------------------
 
 pytest==8.3.4
-<<<<<<< HEAD
 httpx==0.28.1
-=======
-httpx==0.28.1
-
-# Cliente OpenAI compatível usado pelo provider OpenRouter
-openai>=1.0,<2.0
->>>>>>> 8254983112507468ccdff5530dfdce3fc025e848
