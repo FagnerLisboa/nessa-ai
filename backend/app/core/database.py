@@ -16,8 +16,18 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+
+def _sqlalchemy_database_url(database_url: str) -> str:
+    """Garante o uso do driver psycopg v3 em URLs da Neon/Vercel."""
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    return database_url
+
+
 engine = create_engine(
-    settings.DATABASE_URL,
+    _sqlalchemy_database_url(settings.DATABASE_URL),
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,

@@ -22,7 +22,7 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "dist",
+              "base": "dist/nessa-ai",
               "browser": ""
             },
             "index": "index.html",
