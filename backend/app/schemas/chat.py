@@ -4,6 +4,7 @@ NESSA AI — Schemas do Chat
 Contratos de request/response do chat.
 
 Request:
+
 {
     "message": "Olá NESSA",
     "conversation_id": "<uuid?>",
@@ -11,6 +12,7 @@ Request:
 }
 
 Response:
+
 {
     "response": "...",
     "conversation_id": "<uuid>"
@@ -44,7 +46,7 @@ class ChatRequest(BaseModel):
     model: str = Field(
         default="nessa",
         description="Modelo de IA selecionado pelo usuário.",
-        examples=["nessa", "qwen", "gemini"],
+        examples=["nessa", "gemini", "openrouter"],
     )
 
     @field_validator("message")
@@ -62,11 +64,15 @@ class ChatRequest(BaseModel):
     def model_must_be_supported(cls, value: str) -> str:
         normalized = value.strip().lower()
 
-        allowed_models = {"nessa", "qwen", "gemini"}
+        allowed_models = {
+            "nessa",
+            "gemini",
+            "openrouter",
+        }
 
         if normalized not in allowed_models:
             raise ValueError(
-                "Modelo inválido. Use: nessa, qwen ou gemini."
+                "Modelo inválido. Use: nessa, gemini ou openrouter."
             )
 
         return normalized
