@@ -1,23 +1,51 @@
 # ============================================================
-# NESSA AI — Backend (Etapa 2.1 · Fundação)
-# Python 3.12+ · versões estáveis e compatíveis entre si
+# NESSA AI — Backend
+# Python 3.12+
+# FastAPI + PostgreSQL + AI Providers
 # ============================================================
+
+# ------------------------------------------------------------
+# Web API
+# ------------------------------------------------------------
 
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
+
+# ------------------------------------------------------------
+# Banco de dados
+# ------------------------------------------------------------
+
 sqlalchemy==2.0.36
 alembic==1.14.0
 psycopg[binary]==3.2.3
+
+# ------------------------------------------------------------
+# Configuração e validação
+# ------------------------------------------------------------
+
 pydantic==2.10.4
 pydantic-settings==2.7.0
-
-# Carregamento do arquivo .env (usado pelo pydantic-settings)
 python-dotenv==1.0.1
 
-# Google Gen AI SDK oficial (Gemini). O próprio Google recomenda
-# pinar < 3.0.0 (mudanças previstas de Function Calling na v3).
+# ------------------------------------------------------------
+# OpenAI-compatible APIs
+#
+# Usado atualmente pelo:
+# - OpenRouterProvider
+# - QwenProvider
+# ------------------------------------------------------------
+
+openai>=1.68,<2.0
+
+# ------------------------------------------------------------
+# Google Gemini
+# ------------------------------------------------------------
+
 google-genai>=1.0,<3.0
 
-# Testes (pytest + cliente HTTP do FastAPI TestClient)
+# ------------------------------------------------------------
+# Testes
+# ------------------------------------------------------------
+
 pytest==8.3.4
 httpx==0.28.1
