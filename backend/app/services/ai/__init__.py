@@ -4,14 +4,17 @@ NESSA AI — Camada de provedores de IA
 Seleção central dos providers disponíveis.
 
 Modelos selecionáveis pelo frontend:
+
     - nessa
-    - qwen
     - gemini
+    - openrouter
+    - qwen
 """
 
 from app.core.config import get_settings
 from app.services.ai.gemini_provider import GeminiProvider
 from app.services.ai.mock_provider import MockAIProvider
+from app.services.ai.openrouter_provider import OpenRouterProvider
 from app.services.ai.provider import AIProvider, ProviderResult
 from app.services.ai.qwen_provider import QwenProvider
 
@@ -39,6 +42,9 @@ def get_ai_provider(model: str | None = None) -> AIProvider:
     if provider_id == "gemini":
         return GeminiProvider()
 
+    if provider_id == "openrouter":
+        return OpenRouterProvider()
+
     if provider_id == "qwen":
         return QwenProvider()
 
@@ -49,6 +55,7 @@ __all__ = [
     "AIProvider",
     "GeminiProvider",
     "MockAIProvider",
+    "OpenRouterProvider",
     "ProviderResult",
     "QwenProvider",
     "get_ai_provider",

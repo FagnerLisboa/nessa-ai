@@ -1,5 +1,6 @@
 /* ============================================================
    NESSA AI — Modelos de domínio (core/models)
+
    Contratos tipados das áreas da plataforma. Conversas e chat
    são persistidos pelo backend FastAPI; as demais áreas seguem
    com dados de demonstração em core/services.
@@ -16,8 +17,10 @@ export interface Conversation {
   id: string;
   title: string;
   messageCount: number;
+
   /** Data já formatada (pt-BR) para exibição. */
   displayDate: string;
+
   /** Mensagens da conversa (presentes quando carregadas em detalhe). */
   messages?: ChatMessage[];
 }
@@ -30,6 +33,7 @@ export interface Agent {
   description: string;
   model: string;
   status: AgentStatus;
+
   /** Letra exibida no monograma do avatar. */
   monogram: string;
 }
@@ -43,7 +47,16 @@ export interface Project {
   displayUpdate: string;
 }
 
-export type FileKind = "pdf" | "docx" | "txt" | "csv" | "xlsx" | "png" | "jpg" | "webp";
+export type FileKind =
+  | "pdf"
+  | "docx"
+  | "txt"
+  | "csv"
+  | "xlsx"
+  | "png"
+  | "jpg"
+  | "webp";
+
 export type FileStatus = "pronto" | "processando";
 
 export interface FileItem {
@@ -121,9 +134,11 @@ export interface AIProvider {
 
 /* ------------------------------------------------------------
    Modelos de IA selecionáveis no composer.
-   O `id` é o identificador que será enviado à API quando o
-   backend expuser o roteamento de motores (AI Gateway).
+
+   O `id` é o identificador enviado à API para o roteamento
+   do provider no backend.
    ------------------------------------------------------------ */
+
 export interface AiModel {
   id: string;
   label: string;
@@ -131,8 +146,8 @@ export interface AiModel {
 
 export const AI_MODELS: AiModel[] = [
   { id: "nessa", label: "NESSA" },
-  { id: "qwen", label: "Qwen" },
   { id: "gemini", label: "Gemini" },
+  { id: "openrouter", label: "OpenRouter" },
 ];
 
 export const DEFAULT_AI_MODEL_ID = "nessa";

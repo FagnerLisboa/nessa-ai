@@ -6,9 +6,9 @@ Toda configuração vem de variáveis de ambiente / arquivo .env.
 Nenhum segredo é declarado neste arquivo — apenas contratos e
 padrões de desenvolvimento.
 
-SEGURANÇA: as chaves dos provedores de IA (OpenAI, Gemini,
-Claude, Qwen, Kimi, Grok, DeepSeek) vivem exclusivamente aqui,
-no backend. O frontend Angular nunca as recebe.
+SEGURANÇA:
+As chaves dos provedores de IA vivem exclusivamente no backend.
+O frontend Angular nunca recebe essas chaves.
 """
 
 from functools import lru_cache
@@ -54,22 +54,24 @@ class Settings(BaseSettings):
     # ---------------------------------------------------------
     # Motor de IA
     # ---------------------------------------------------------
-
+    #
     # Provedores disponíveis:
-    # mock   → resposta fixa para desenvolvimento
-    # gemini → Google Gemini
-    # qwen   → Alibaba Cloud Model Studio / Qwen
+    #
+    # mock       → resposta fixa para desenvolvimento
+    # gemini     → Google Gemini
+    # openrouter → OpenRouter
+    # qwen       → Alibaba Cloud Model Studio / Qwen
+    #
+    # O valor pode ser sobrescrito pelo arquivo .env.
+    # ---------------------------------------------------------
+
     AI_PROVIDER: str = "mock"
 
     # ---------------------------------------------------------
     # Google Gemini
     # ---------------------------------------------------------
 
-    # Nunca preencher em arquivo versionado.
-    # Configurar somente no .env local.
-
     GEMINI_API_KEY: str = ""
-
     GEMINI_MODEL: str = "gemini-2.5-flash"
 
     # ---------------------------------------------------------
@@ -77,6 +79,20 @@ class Settings(BaseSettings):
     # ---------------------------------------------------------
 
     OPENAI_API_KEY: str = ""
+
+    # ---------------------------------------------------------
+    # OpenRouter
+    # ---------------------------------------------------------
+    #
+    # OpenRouter utiliza uma API compatível com OpenAI.
+    #
+    # O modelo "openrouter/free" seleciona automaticamente
+    # um modelo gratuito disponível.
+    # ---------------------------------------------------------
+
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+    OPENROUTER_MODEL: str = "openrouter/free"
 
     # ---------------------------------------------------------
     # Google
