@@ -1,5 +1,8 @@
 import type { Routes } from "@angular/router";
 
+import { LoginComponent } from "./features/auth/login/login.component";
+import { RegisterComponent } from "./features/auth/register/register.component";
+
 import { AgentsPage } from "./features/agents/agents.page";
 import { AssistantPage } from "./features/assistant/assistant.page";
 import { ConversationsPage } from "./features/conversations/conversations.page";
@@ -13,37 +16,80 @@ import { SettingsPage } from "./features/settings/settings.page";
 import { ShellComponent } from "./features/shell/shell.component";
 import { VideosPage } from "./features/videos/videos.page";
 import { VoicePage } from "./features/voice/voice.page";
-import { RegisterPage } from "./features/auth/register.page";
-import { LoginPage } from "./features/auth/login.page";
 
 export const routes: Routes = [
+  // Área principal da aplicação
   {
     path: "",
     component: ShellComponent,
     children: [
-      { path: "", pathMatch: "full", component: HomePage },
-      { path: "conversations", component: ConversationsPage },
-      { path: "agents", component: AgentsPage },
-      { path: "projects", component: ProjectsPage },
-      { path: "files", component: FilesPage },
-      { path: "images", component: ImagesPage },
-      { path: "videos", component: VideosPage },
-      { path: "voice", component: VoicePage },
-      { path: "research", component: ResearchPage },
-      { path: "assistant", component: AssistantPage },
-      { path: "settings", component: SettingsPage },
-      { path: "profile", component: ProfilePage },
-      { path: "**", redirectTo: "" },
+      {
+        path: "",
+        pathMatch: "full",
+        component: HomePage,
+      },
+      {
+        path: "conversations",
+        component: ConversationsPage,
+      },
+      {
+        path: "agents",
+        component: AgentsPage,
+      },
+      {
+        path: "projects",
+        component: ProjectsPage,
+      },
+      {
+        path: "files",
+        component: FilesPage,
+      },
+      {
+        path: "images",
+        component: ImagesPage,
+      },
+      {
+        path: "videos",
+        component: VideosPage,
+      },
+      {
+        path: "voice",
+        component: VoicePage,
+      },
+      {
+        path: "research",
+        component: ResearchPage,
+      },
+      {
+        path: "assistant",
+        component: AssistantPage,
+      },
+      {
+        path: "settings",
+        component: SettingsPage,
+      },
+      {
+        path: "profile",
+        component: ProfilePage,
+      },
     ],
   },
+
+  // Autenticação
   {
     path: "login",
-    component: LoginPage,
-    title: "Entrar - NESSA AI",
+    component: LoginComponent,
+    title: "Login - NESSA AI",
   },
   {
     path: "cadastro",
-    component: RegisterPage,
-    title: "Criar Conta - NESSA AI",
+    component: RegisterComponent,
+    title: "Criar conta - NESSA AI",
+  },
+
+  // Rota não encontrada
+  {
+    path: "**",
+    redirectTo: "",
   },
 ];

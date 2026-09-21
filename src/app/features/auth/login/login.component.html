@@ -1,0 +1,224 @@
+<div class="auth-page">
+  <!-- Background -->
+  <div class="auth-background" aria-hidden="true">
+    <div class="ambient-gradient ambient-gradient--top"></div>
+    <div class="ambient-gradient ambient-gradient--bottom"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Card -->
+  <main class="auth-card route-anim">
+    <!-- Header -->
+    <header class="auth-header">
+      <app-nessa-logo [size]="56"></app-nessa-logo>
+
+      <div class="auth-brand">
+        <h1 class="auth-title">NESSA</h1>
+        <p class="auth-subtitle">SEU AGENTE DE IA</p>
+      </div>
+    </header>
+
+    <!-- Formulário -->
+    <form
+      class="auth-form"
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <!-- E-mail -->
+      <div class="field-group">
+        <label for="email" class="field-label">
+          <span class="field-icon" aria-hidden="true">@</span>
+          <span>E-mail</span>
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          class="field-input"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="seu@email.com"
+          aria-label="E-mail"
+          [class.field-input--error]="email?.invalid && email?.touched"
+        />
+
+        @if (email?.invalid && email?.touched) {
+          <div class="field-error" role="alert">
+            @if (email?.errors?.["required"]) {
+              <span>Informe seu e-mail.</span>
+            }
+
+            @if (email?.errors?.["email"]) {
+              <span>Digite um e-mail válido.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Senha -->
+      <div class="field-group">
+        <label for="password" class="field-label">
+          <span class="field-icon" aria-hidden="true">🔒</span>
+          <span>Senha</span>
+        </label>
+
+        <div class="password-wrapper">
+          <input
+            id="password"
+            class="field-input field-input--with-toggle"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Sua senha"
+            aria-label="Senha"
+            [type]="showPassword() ? 'text' : 'password'"
+            [class.field-input--error]="password?.invalid && password?.touched"
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="
+              showPassword() ? 'Ocultar senha' : 'Mostrar senha'
+            "
+            [attr.title]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+            (click)="togglePassword()"
+          >
+            @if (showPassword()) {
+              <!-- Olho fechado -->
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20
+                     c-7 0-11-8-11-8
+                     a18.45 18.45 0 0 1 5.06-5.94
+                     M9.9 4.24A9.12 9.12 0 0 1 12 4
+                     c7 0 11 8 11 8
+                     a18.5 18.5 0 0 1-2.16 3.19
+                     m-6.72-1.07
+                     a3 3 0 1 1-4.24-4.24"
+                ></path>
+
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            } @else {
+              <!-- Olho aberto -->
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M1 12s4-8 11-8
+                     11 8 11 8
+                     -4 8-11 8
+                     -11-8-11-8z"
+                ></path>
+
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+
+        @if (password?.invalid && password?.touched) {
+          <div class="field-error" role="alert">
+            @if (password?.errors?.["required"]) {
+              <span>Informe sua senha.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Recuperação -->
+      <div class="form-extras">
+        <button type="button" class="link-button link-button--small">
+          Esqueci minha senha
+        </button>
+      </div>
+
+      <!-- Erro de autenticação -->
+      @if (errorMessage()) {
+        <div class="global-error" role="alert" aria-live="polite">
+          <span class="global-error__icon" aria-hidden="true"> ! </span>
+
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Botão de login -->
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="loginForm.invalid || isLoading()"
+      >
+        @if (!isLoading()) {
+          <span>ENTRAR</span>
+        } @else {
+          <span class="loading-spinner" aria-hidden="true"></span>
+
+          <span>Autenticando...</span>
+        }
+      </button>
+    </form>
+
+    <!-- Separador -->
+    <div class="auth-divider" aria-hidden="true">
+      <span>OU</span>
+    </div>
+
+    <!-- Google -->
+    <button
+      type="button"
+      class="btn-google"
+      disabled
+      aria-label="Login com Google em breve"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M12.545 10.239v3.821h5.445
+             c-0.712 2.315-2.647 3.972-5.445 3.972
+             -3.332 0-6.033-2.701-6.033-6.032
+             s2.701-6.032 6.033-6.032
+             c1.498 0 2.866.549 3.921 1.453
+             l2.814-2.814
+             c-1.795-1.674-4.186-2.701-6.735-2.701
+             -5.541 0-10.033 4.492-10.033 10.033
+             s4.492 10.033 10.033 10.033
+             c8.718 0 10.033-7.37 10.033-11.189
+             0-.753-.066-1.479-.186-2.143h-9.84z"
+        />
+      </svg>
+
+      <span>Continuar com Google</span>
+    </button>
+
+    <!-- Cadastro -->
+    <footer class="auth-footer">
+      <span>Ainda não possui uma conta?</span>
+
+      <a routerLink="/cadastro" class="auth-link"> Criar conta </a>
+    </footer>
+  </main>
+</div>

@@ -18,6 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/assistant": "Assistente",
   "/settings": "Configurações",
   "/profile": "Perfil",
+  "/login": "Login",
   "/cadastro": "Criar conta",
 };
 
@@ -28,11 +29,18 @@ const PAGE_TITLES: Record<string, string> = {
   styleUrl: "./header.component.scss",
 })
 export class HeaderComponent {
+  /**
+   * Emitido para abrir/fechar o drawer
+   * em tablet/mobile.
+   */
   readonly requestToggle = output<void>();
 
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
+  /**
+   * Título da página atual, derivado da rota.
+   */
   protected pageTitle = signal(PAGE_TITLES[this.router.url] ?? "Início");
 
   protected get isDark(): boolean {
@@ -52,11 +60,17 @@ export class HeaderComponent {
       });
   }
 
+  /**
+   * Alterna entre tema claro e escuro.
+   */
   protected toggleTheme(): void {
     this.themeService.toggle();
   }
 
-  protected openRegistration(): void {
-    this.router.navigate(["/cadastro"]);
+  /**
+   * Abre a tela de login.
+   */
+  protected openLogin(): void {
+    this.router.navigate(["/login"]);
   }
 }
