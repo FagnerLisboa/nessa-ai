@@ -10,7 +10,9 @@ node_modules/
 # Editors
 .vscode/
 
-# Logs
-*.log
+# Build outputs
+dist/
+build/
+target/
 
 ```
