@@ -52,6 +52,14 @@ class Settings(BaseSettings):
     )
 
     # ---------------------------------------------------------
+    # Autenticação / JWT
+    # ---------------------------------------------------------
+
+    SECRET_KEY: str = "sua-chave-secreta-muito-forte-e-segura-aqui"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # ---------------------------------------------------------
     # Motor de IA
     # ---------------------------------------------------------
     #
