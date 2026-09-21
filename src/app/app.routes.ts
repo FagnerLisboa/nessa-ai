@@ -13,7 +13,11 @@ import { SettingsPage } from "./features/settings/settings.page";
 import { VideosPage } from "./features/videos/videos.page";
 import { VoicePage } from "./features/voice/voice.page";
 import { RegisterPage } from "./features/auth/register.page";
+<<<<<<< HEAD
 import { ShellComponent } from "./features/shell/shell.component";
+=======
+import { LoginPage } from "./features/auth/login.page";
+>>>>>>> origin/integrated-registration-with-nessa-ai-592cc
 
 export const routes: Routes = [
   /*
@@ -26,6 +30,11 @@ export const routes: Routes = [
    * principal da aplicação.
    */
 
+  {
+    path: "login",
+    component: LoginPage,
+    title: "Entrar - NESSA AI",
+  },
   {
     path: "cadastro",
     component: RegisterPage,
