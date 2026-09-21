@@ -28,8 +28,7 @@
       <!-- E-mail -->
       <div class="field-group">
         <label for="email" class="field-label">
-          <span class="field-icon" aria-hidden="true"> @ </span>
-
+          <span class="field-icon" aria-hidden="true">@</span>
           <span>E-mail</span>
         </label>
 
@@ -41,16 +40,16 @@
           autocomplete="email"
           placeholder="seu@email.com"
           aria-label="E-mail"
-          [class.field-input--error]="email?.invalid && email.touched"
+          [class.field-input--error]="email?.invalid && email?.touched"
         />
 
-        @if (email?.invalid && email.touched) {
+        @if (email?.invalid && email?.touched) {
           <div class="field-error" role="alert">
-            @if (email.errors?.["required"]) {
+            @if (email?.errors?.["required"]) {
               <span>Informe seu e-mail.</span>
             }
 
-            @if (email.errors?.["email"]) {
+            @if (email?.errors?.["email"]) {
               <span>Digite um e-mail válido.</span>
             }
           </div>
@@ -60,8 +59,7 @@
       <!-- Senha -->
       <div class="field-group">
         <label for="password" class="field-label">
-          <span class="field-icon" aria-hidden="true"> 🔒 </span>
-
+          <span class="field-icon" aria-hidden="true">🔒</span>
           <span>Senha</span>
         </label>
 
@@ -74,7 +72,7 @@
             placeholder="Sua senha"
             aria-label="Senha"
             [type]="showPassword() ? 'text' : 'password'"
-            [class.field-input--error]="password?.invalid && password.touched"
+            [class.field-input--error]="password?.invalid && password?.touched"
           />
 
           <button
@@ -108,9 +106,9 @@
                      a18.5 18.5 0 0 1-2.16 3.19
                      m-6.72-1.07
                      a3 3 0 1 1-4.24-4.24"
-                />
+                ></path>
 
-                <line x1="1" y1="1" x2="23" y2="23" />
+                <line x1="1" y1="1" x2="23" y2="23"></line>
               </svg>
             } @else {
               <!-- Olho aberto -->
@@ -130,17 +128,17 @@
                      11 8 11 8
                      -4 8-11 8
                      -11-8-11-8z"
-                />
+                ></path>
 
-                <circle cx="12" cy="12" r="3" />
+                <circle cx="12" cy="12" r="3"></circle>
               </svg>
             }
           </button>
         </div>
 
-        @if (password?.invalid && password.touched) {
+        @if (password?.invalid && password?.touched) {
           <div class="field-error" role="alert">
-            @if (password.errors?.["required"]) {
+            @if (password?.errors?.["required"]) {
               <span>Informe sua senha.</span>
             }
           </div>
@@ -218,7 +216,7 @@
 
     <!-- Cadastro -->
     <footer class="auth-footer">
-      <span> Ainda não possui uma conta? </span>
+      <span>Ainda não possui uma conta?</span>
 
       <a routerLink="/cadastro" class="auth-link"> Criar conta </a>
     </footer>
