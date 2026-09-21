@@ -34,7 +34,7 @@
     }
   </button>
 
-  <button type="button" class="head__avatar" aria-label="Perfil do usuário">
+  <button type="button" class="head__avatar" [attr.aria-label]="isAuthenticated ? 'Perfil do usuário' : 'Criar conta'" [attr.title]="isAuthenticated ? 'Perfil' : 'Criar conta'" (click)="navigateToAvatarRoute()">
     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="8.4" r="3.4" />
       <path d="M5 19.5c.8-3.4 3.6-5.3 7-5.3s6.2 1.9 7 5.3" />

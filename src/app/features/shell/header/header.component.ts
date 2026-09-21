@@ -4,6 +4,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import { filter } from "rxjs/operators";
 
 import { ThemeService } from "../../../../core/services";
+import { AuthService } from "../../../../core/services/auth.service";
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Início",
@@ -18,6 +19,8 @@ const PAGE_TITLES: Record<string, string> = {
   "/assistant": "Assistente",
   "/settings": "Configurações",
   "/profile": "Perfil",
+  "/login": "Entrar",
+  "/cadastro": "Criar Conta",
 };
 
 @Component({
@@ -31,13 +34,28 @@ export class HeaderComponent {
   readonly requestToggle = output<void>();
 
   private readonly themeService = inject(ThemeService);
-  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  protected readonly router = inject(Router);
 
   /** Título da página atual, derivado da rota. */
   protected pageTitle = signal(PAGE_TITLES[this.router.url] ?? "Início");
 
   protected get isDark(): boolean {
     return this.themeService.theme() === "dark";
+  }
+
+  protected get isAuthenticated(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  /** Rota de destino do avatar: /profile se autenticado, /cadastro se não */
+  protected get avatarRoute(): string {
+    return this.isAuthenticated ? "/profile" : "/cadastro";
+  }
+
+  /** Navega para a rota do avatar */
+  protected navigateToAvatarRoute(): void {
+    this.router.navigate([this.avatarRoute]);
   }
 
   constructor() {
