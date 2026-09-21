@@ -10,107 +10,40 @@ import { ProfilePage } from "./features/profile/profile.page";
 import { ProjectsPage } from "./features/projects/projects.page";
 import { ResearchPage } from "./features/research/research.page";
 import { SettingsPage } from "./features/settings/settings.page";
+import { ShellComponent } from "./features/shell/shell.component";
 import { VideosPage } from "./features/videos/videos.page";
 import { VoicePage } from "./features/voice/voice.page";
 import { RegisterPage } from "./features/auth/register.page";
-import { ShellComponent } from "./features/shell/shell.component";
+import { LoginPage } from "./features/auth/login.page";
 
 export const routes: Routes = [
-  /*
-   * ============================================================
-   * AUTENTICAÇÃO
-   * ============================================================
-   *
-   * Essas páginas ficam fora do ShellComponent.
-   * Dessa forma, login/cadastro não dependem do layout
-   * principal da aplicação.
-   */
-
-  {
-    path: "cadastro",
-    component: RegisterPage,
-    title: "Criar Conta - NESSA AI",
-  },
-
-  /*
-   * ============================================================
-   * APLICAÇÃO
-   * ============================================================
-   */
-
   {
     path: "",
     component: ShellComponent,
     children: [
-      {
-        path: "",
-        pathMatch: "full",
-        component: HomePage,
-      },
-
-      {
-        path: "conversations",
-        component: ConversationsPage,
-      },
-
-      {
-        path: "agents",
-        component: AgentsPage,
-      },
-
-      {
-        path: "projects",
-        component: ProjectsPage,
-      },
-
-      {
-        path: "files",
-        component: FilesPage,
-      },
-
-      {
-        path: "images",
-        component: ImagesPage,
-      },
-
-      {
-        path: "videos",
-        component: VideosPage,
-      },
-
-      {
-        path: "voice",
-        component: VoicePage,
-      },
-
-      {
-        path: "research",
-        component: ResearchPage,
-      },
-
-      {
-        path: "assistant",
-        component: AssistantPage,
-      },
-
-      {
-        path: "settings",
-        component: SettingsPage,
-      },
-
-      {
-        path: "profile",
-        component: ProfilePage,
-      },
-
-      /*
-       * Qualquer rota desconhecida dentro da aplicação
-       * retorna para a Home.
-       */
-      {
-        path: "**",
-        redirectTo: "",
-      },
+      { path: "", pathMatch: "full", component: HomePage },
+      { path: "conversations", component: ConversationsPage },
+      { path: "agents", component: AgentsPage },
+      { path: "projects", component: ProjectsPage },
+      { path: "files", component: FilesPage },
+      { path: "images", component: ImagesPage },
+      { path: "videos", component: VideosPage },
+      { path: "voice", component: VoicePage },
+      { path: "research", component: ResearchPage },
+      { path: "assistant", component: AssistantPage },
+      { path: "settings", component: SettingsPage },
+      { path: "profile", component: ProfilePage },
+      { path: "**", redirectTo: "" },
     ],
+  },
+  {
+    path: "login",
+    component: LoginPage,
+    title: "Entrar - NESSA AI",
+  },
+  {
+    path: "cadastro",
+    component: RegisterPage,
+    title: "Criar Conta - NESSA AI",
   },
 ];
