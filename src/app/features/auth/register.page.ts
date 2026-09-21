@@ -1,10 +1,5 @@
 import { Component, signal } from "@angular/core";
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from "@angular/forms";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { AuthService } from "../../../core/services/auth.service";
@@ -14,11 +9,6 @@ import { AuthService } from "../../../core/services/auth.service";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-<<<<<<< HEAD
-    <section class="auth-container">
-      <div class="auth-card">
-        <app-nessa-logo [size]="48"></app-nessa-logo>
-=======
     <div class="auth-page">
       <div class="auth-background">
         <div class="ambient-gradient ambient-gradient--top"></div>
@@ -37,25 +27,9 @@ import { AuthService } from "../../../core/services/auth.service";
           <h1 class="auth-title">REGISTRO</h1>
           <p class="auth-subtitle">Crie seu perfil em segundos e junte-se à nossa comunidade exclusiva.</p>
         </div>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
 
-        <h1 class="auth-title">Criar conta</h1>
-
-        <p class="auth-subtitle">
-          Preencha seus dados para começar a usar a NESSA AI
-        </p>
-
-        <form
-          [formGroup]="registerForm"
-          (ngSubmit)="onSubmit()"
-          class="auth-form"
-        >
-          <!-- Nome -->
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
           <div class="field-group">
-<<<<<<< HEAD
-            <label for="name" class="label"> Nome </label>
-
-=======
             <label for="name" class="field-label">
               <span class="field-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -65,25 +39,11 @@ import { AuthService } from "../../../core/services/auth.service";
               </span>
               Nome completo*
             </label>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
             <input
               id="name"
               type="text"
               class="field-input"
               formControlName="name"
-<<<<<<< HEAD
-              [class.input--error]="name?.invalid && name?.touched"
-            />
-
-            @if (name?.invalid && name?.touched) {
-              <div class="error-message">
-                @if (name?.errors?.["required"]) {
-                  <span>Nome é obrigatório</span>
-                }
-
-                @if (name?.errors?.["minlength"]) {
-                  <span> Nome deve ter pelo menos 2 caracteres </span>
-=======
               [class.field-input--error]="name?.invalid && name?.touched"
               autocomplete="name"
               aria-label="Nome completo"
@@ -96,41 +56,21 @@ import { AuthService } from "../../../core/services/auth.service";
                 }
                 @if (name?.errors?.['minlength']) {
                   <span>Mínimo de 2 caracteres</span>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
                 }
               </div>
             }
           </div>
 
-          <!-- E-mail -->
           <div class="field-group">
-<<<<<<< HEAD
-            <label for="email" class="label"> E-mail </label>
-
-=======
             <label for="email" class="field-label">
               <span class="field-icon">@</span>
               Email do Bio-Perfil*
             </label>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
             <input
               id="email"
               type="email"
               class="field-input"
               formControlName="email"
-<<<<<<< HEAD
-              [class.input--error]="email?.invalid && email?.touched"
-            />
-
-            @if (email?.invalid && email?.touched) {
-              <div class="error-message">
-                @if (email?.errors?.["required"]) {
-                  <span>E-mail é obrigatório</span>
-                }
-
-                @if (email?.errors?.["email"]) {
-                  <span>Formato de e-mail inválido</span>
-=======
               [class.field-input--error]="email?.invalid && email?.touched"
               autocomplete="email"
               aria-label="Email do Bio-Perfil"
@@ -143,34 +83,12 @@ import { AuthService } from "../../../core/services/auth.service";
                 }
                 @if (email?.errors?.['email']) {
                   <span>Formato de email inválido</span>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
                 }
               </div>
             }
           </div>
 
-          <!-- Senha -->
           <div class="field-group">
-<<<<<<< HEAD
-            <label for="password" class="label"> Senha </label>
-
-            <input
-              id="password"
-              type="password"
-              class="input"
-              formControlName="password"
-              [class.input--error]="password?.invalid && password?.touched"
-            />
-
-            @if (password?.invalid && password?.touched) {
-              <div class="error-message">
-                @if (password?.errors?.["required"]) {
-                  <span>Senha é obrigatória</span>
-                }
-
-                @if (password?.errors?.["minlength"]) {
-                  <span> Senha deve ter pelo menos 6 caracteres </span>
-=======
             <label for="password" class="field-label">
               <span class="field-icon">🔒</span>
               Senha de Enlace*
@@ -212,39 +130,21 @@ import { AuthService } from "../../../core/services/auth.service";
                 }
                 @if (password?.errors?.['minlength']) {
                   <span>Mínimo de 6 caracteres</span>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
                 }
               </div>
             }
           </div>
 
-          <!-- Confirmar senha -->
           <div class="field-group">
-<<<<<<< HEAD
-            <label for="confirmPassword" class="label"> Confirmar senha </label>
-
-=======
             <label for="confirmPassword" class="field-label">
               <span class="field-icon">✓</span>
               Confirmar Senha*
             </label>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
             <input
               id="confirmPassword"
               type="password"
               class="field-input"
               formControlName="confirmPassword"
-<<<<<<< HEAD
-              [class.input--error]="
-                confirmPassword?.invalid && confirmPassword?.touched
-              "
-            />
-
-            @if (confirmPassword?.invalid && confirmPassword?.touched) {
-              <div class="error-message">
-                @if (confirmPassword?.errors?.["required"]) {
-                  <span> Confirmação de senha é obrigatória </span>
-=======
               [class.field-input--error]="confirmPassword?.invalid && confirmPassword?.touched"
               autocomplete="new-password"
               aria-label="Confirmar Senha"
@@ -254,33 +154,23 @@ import { AuthService } from "../../../core/services/auth.service";
               <div class="field-error">
                 @if (confirmPassword?.errors?.['required']) {
                   <span>Confirmação é obrigatória</span>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
                 }
-
-                @if (registerForm.errors?.["passwordsMismatch"]) {
-                  <span> As senhas não coincidem </span>
+                @if (registerForm.errors?.['passwordsMismatch']) {
+                  <span>As senhas não coincidem</span>
                 }
               </div>
             }
           </div>
 
-          <!-- Erro global -->
           @if (errorMessage()) {
             <div class="global-error">
               {{ errorMessage() }}
             </div>
           }
 
-<<<<<<< HEAD
-          <!-- Botão -->
-          <button
-            type="submit"
-            class="btn btn--primary btn--full"
-=======
           <button 
             type="submit" 
             class="btn-submit"
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
             [disabled]="registerForm.invalid || isLoading()"
           >
             @if (!isLoading()) {
@@ -291,20 +181,13 @@ import { AuthService } from "../../../core/services/auth.service";
           </button>
         </form>
 
-        <!-- Rodapé -->
         <div class="auth-footer">
-<<<<<<< HEAD
-          Já tem uma conta?
-          <a routerLink="/login" class="link"> Fazer login </a>
-=======
           <span>Já é membro?</span>
           <a routerLink="/login" class="auth-link">Fazer login</a>
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
         </div>
       </div>
     </div>
   `,
-
   styles: `
     :host {
       display: block;
@@ -477,22 +360,9 @@ import { AuthService } from "../../../core/services/auth.service";
       border-radius: 12px;
       color: var(--nessa-text);
       font-size: 14px;
-<<<<<<< HEAD
-
-      &:focus {
-        outline: none;
-        border-color: var(--primary, #6366f1);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-      }
-
-      &.input--error {
-        border-color: var(--danger, #ef4444);
-      }
-=======
       font-family: inherit;
       transition: all 0.2s var(--ease-out);
       outline: none;
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
     }
 
     .field-input::placeholder {
@@ -625,17 +495,7 @@ import { AuthService } from "../../../core/services/auth.service";
     }
 
     @keyframes spin {
-<<<<<<< HEAD
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-=======
       to { transform: rotate(360deg); }
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
     }
 
     .auth-footer {
@@ -653,12 +513,6 @@ import { AuthService } from "../../../core/services/auth.service";
     .auth-link {
       color: var(--nessa-primary);
       text-decoration: none;
-<<<<<<< HEAD
-      font-weight: 500;
-
-      &:hover {
-        text-decoration: underline;
-=======
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -697,54 +551,38 @@ import { AuthService } from "../../../core/services/auth.service";
       .btn-submit {
         height: 48px;
         font-size: 11px;
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
       }
     }
   `,
 })
 export class RegisterPage {
   registerForm: FormGroup;
-
   isLoading = signal(false);
-
   errorMessage = signal<string | null>(null);
   showPassword = signal(false);
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router,
+    private router: Router
   ) {
-    this.registerForm = this.fb.group(
-      {
-        name: ["", [Validators.required, Validators.minLength(2)]],
-
-        email: ["", [Validators.required, Validators.email]],
-
-        password: ["", [Validators.required, Validators.minLength(6)]],
-
-        confirmPassword: ["", [Validators.required]],
-      },
-      {
-        validators: this.passwordMatchValidator,
-      },
-    );
+    this.registerForm = this.fb.group({
+      name: ["", [Validators.required, Validators.minLength(2)]],
+      email: ["", [Validators.required, Validators.email]],
+      password: ["", [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ["", [Validators.required]],
+    }, {
+      validators: this.passwordMatchValidator
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get("password");
     const confirmPassword = form.get("confirmPassword");
-
-    if (
-      password &&
-      confirmPassword &&
-      password.value !== confirmPassword.value
-    ) {
-      return {
-        passwordsMismatch: true,
-      };
+    
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { passwordsMismatch: true };
     }
-
     return null;
   }
 
@@ -763,62 +601,27 @@ export class RegisterPage {
     const { name, email, password } = this.registerForm.value;
 
     try {
-<<<<<<< HEAD
-      await this.authService.register({
-        name,
-        email,
-        password,
-      });
-
-      // Cadastro realizado com sucesso.
-      // Redireciona para o login.
-=======
       await this.authService.register({ name, email, password }).toPromise();
       
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
       setTimeout(() => {
         this.router.navigate(["/login"]);
       }, 1500);
     } catch (error: any) {
       console.error("Erro no cadastro:", error);
-
       if (error?.status === 400) {
-<<<<<<< HEAD
-        this.errorMessage.set(
-          "Dados inválidos. Verifique as informações fornecidas.",
-        );
-=======
         this.errorMessage.set("Dados inválidos. Verifique as informações.");
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
       } else if (error?.status === 409) {
         this.errorMessage.set("Já existe uma conta com este email.");
       } else {
-<<<<<<< HEAD
-        this.errorMessage.set(
-          "Ocorreu um erro durante o cadastro. Tente novamente.",
-        );
-=======
         this.errorMessage.set("Falha no registro. Tente novamente.");
->>>>>>> origin/integrated-registration-with-nessa-ai-592cc
       }
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  get name() {
-    return this.registerForm.get("name");
-  }
-
-  get email() {
-    return this.registerForm.get("email");
-  }
-
-  get password() {
-    return this.registerForm.get("password");
-  }
-
-  get confirmPassword() {
-    return this.registerForm.get("confirmPassword");
-  }
+  get name() { return this.registerForm.get("name"); }
+  get email() { return this.registerForm.get("email"); }
+  get password() { return this.registerForm.get("password"); }
+  get confirmPassword() { return this.registerForm.get("confirmPassword"); }
 }
