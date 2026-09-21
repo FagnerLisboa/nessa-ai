@@ -1,0 +1,289 @@
+<div class="auth-page">
+  <!-- Background -->
+  <div class="auth-background" aria-hidden="true">
+    <div class="ambient-gradient ambient-gradient--top"></div>
+    <div class="ambient-gradient ambient-gradient--bottom"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Card -->
+  <main class="auth-card route-anim">
+    <!-- Header -->
+    <header class="auth-header">
+      <div class="user-icon-wrapper" aria-hidden="true">
+        <svg
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+
+      <div class="auth-brand">
+        <h1 class="auth-title">CRIAR CONTA</h1>
+
+        <p class="auth-subtitle">Crie sua conta e comece a usar a NESSA.</p>
+      </div>
+    </header>
+
+    <!-- Formulário -->
+    <form
+      class="auth-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <!-- Nome -->
+      <div class="field-group">
+        <label for="name" class="field-label">
+          <span class="field-icon" aria-hidden="true">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </span>
+
+          <span>Nome completo</span>
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          class="field-input"
+          formControlName="name"
+          autocomplete="name"
+          aria-label="Nome completo"
+          placeholder="Digite seu nome"
+          [class.field-input--error]="name?.invalid && name.touched"
+        />
+
+        @if (name?.invalid && name.touched) {
+          <div class="field-error" role="alert">
+            @if (name.errors?.["required"]) {
+              <span>Informe seu nome.</span>
+            }
+
+            @if (name.errors?.["minlength"]) {
+              <span> O nome deve ter pelo menos 2 caracteres. </span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- E-mail -->
+      <div class="field-group">
+        <label for="email" class="field-label">
+          <span class="field-icon" aria-hidden="true"> @ </span>
+
+          <span>E-mail</span>
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          class="field-input"
+          formControlName="email"
+          autocomplete="email"
+          aria-label="E-mail"
+          placeholder="seu@email.com"
+          [class.field-input--error]="email?.invalid && email.touched"
+        />
+
+        @if (email?.invalid && email.touched) {
+          <div class="field-error" role="alert">
+            @if (email.errors?.["required"]) {
+              <span>Informe seu e-mail.</span>
+            }
+
+            @if (email.errors?.["email"]) {
+              <span>Digite um e-mail válido.</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Senha -->
+      <div class="field-group">
+        <label for="password" class="field-label">
+          <span class="field-icon" aria-hidden="true"> 🔒 </span>
+
+          <span>Senha</span>
+        </label>
+
+        <div class="password-wrapper">
+          <input
+            id="password"
+            class="field-input field-input--with-toggle"
+            formControlName="password"
+            autocomplete="new-password"
+            aria-label="Senha"
+            placeholder="Crie uma senha"
+            [type]="showPassword() ? 'text' : 'password'"
+            [class.field-input--error]="password?.invalid && password.touched"
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            [attr.aria-label]="
+              showPassword() ? 'Ocultar senha' : 'Mostrar senha'
+            "
+            [attr.title]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+            (click)="togglePassword()"
+          >
+            @if (showPassword()) {
+              <!-- Senha visível -->
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20
+                     c-7 0-11-8-11-8
+                     a18.45 18.45 0 0 1 5.06-5.94
+                     M9.9 4.24A9.12 9.12 0 0 1 12 4
+                     c7 0 11 8 11 8
+                     a18.5 18.5 0 0 1-2.16 3.19
+                     m-6.72-1.07
+                     a3 3 0 1 1-4.24-4.24"
+                ></path>
+
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            } @else {
+              <!-- Senha oculta -->
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M1 12s4-8 11-8
+                     11 8 11 8
+                     -4 8-11 8
+                     -11-8-11-8z"
+                ></path>
+
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            }
+          </button>
+        </div>
+
+        @if (password?.invalid && password.touched) {
+          <div class="field-error" role="alert">
+            @if (password.errors?.["required"]) {
+              <span>Informe uma senha.</span>
+            }
+
+            @if (password.errors?.["minlength"]) {
+              <span> A senha deve ter pelo menos 6 caracteres. </span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Confirmar senha -->
+      <div class="field-group">
+        <label for="confirmPassword" class="field-label">
+          <span class="field-icon" aria-hidden="true"> ✓ </span>
+
+          <span>Confirmar senha</span>
+        </label>
+
+        <input
+          id="confirmPassword"
+          type="password"
+          class="field-input"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          aria-label="Confirmar senha"
+          placeholder="Digite a senha novamente"
+          [class.field-input--error]="
+            confirmPassword?.invalid && confirmPassword.touched
+          "
+        />
+
+        @if (confirmPassword?.invalid && confirmPassword.touched) {
+          <div class="field-error" role="alert">
+            @if (confirmPassword.errors?.["required"]) {
+              <span> Confirme sua senha. </span>
+            }
+          </div>
+        }
+
+        @if (
+          confirmPassword?.touched && registerForm.errors?.["passwordsMismatch"]
+        ) {
+          <div class="field-error" role="alert">
+            <span> As senhas não coincidem. </span>
+          </div>
+        }
+      </div>
+
+      <!-- Erro global -->
+      @if (errorMessage()) {
+        <div class="global-error" role="alert" aria-live="polite">
+          <span class="global-error__icon" aria-hidden="true"> ! </span>
+
+          <span>
+            {{ errorMessage() }}
+          </span>
+        </div>
+      }
+
+      <!-- Criar conta -->
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="registerForm.invalid || isLoading()"
+      >
+        @if (!isLoading()) {
+          <span>CRIAR MINHA CONTA</span>
+        } @else {
+          <span class="loading-spinner" aria-hidden="true"></span>
+
+          <span>Criando conta...</span>
+        }
+      </button>
+    </form>
+
+    <!-- Login -->
+    <footer class="auth-footer">
+      <span> Já possui uma conta? </span>
+
+      <a routerLink="/login" class="auth-link"> Entrar </a>
+    </footer>
+  </main>
+</div>
