@@ -297,7 +297,7 @@ export class RegisterPage {
     const { name, email, password } = this.registerForm.value;
 
     try {
-      await this.authService.register(name, email, password);
+      await this.authService.register({ name, email, password }).toPromise();
       
       // Após cadastro bem-sucedido, redirecionar para login
       setTimeout(() => {

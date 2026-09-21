@@ -14,6 +14,7 @@ import { ShellComponent } from "./features/shell/shell.component";
 import { VideosPage } from "./features/videos/videos.page";
 import { VoicePage } from "./features/voice/voice.page";
 import { RegisterPage } from "./features/auth/register.page";
+import { LoginPage } from "./features/auth/login.page";
 
 export const routes: Routes = [
   {
@@ -34,6 +35,11 @@ export const routes: Routes = [
       { path: "profile", component: ProfilePage },
       { path: "**", redirectTo: "" },
     ],
+  },
+  {
+    path: "login",
+    component: LoginPage,
+    title: "Entrar - NESSA AI",
   },
   {
     path: "cadastro",
